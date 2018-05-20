@@ -8,6 +8,14 @@ Neural network library for elixir.
 mix coveralls
 ```
 
+## Defined Standards
+- Keep the Changelog up to date and change version numbers accordingly
+- Only public functions are documented with **@doc**
+- If possible, provide an example usage in the @doc block
+- Test everything.  We will know if coverage is missing.
+
+
+
 ## Installation
 
 If [available in Hex](https://hex.pm/docs/publish), the package can be installed
