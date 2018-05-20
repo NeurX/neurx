@@ -1,6 +1,12 @@
 # NeurxCore
 
-**TODO: Add description**
+Neural network library for elixir.
+
+### Testing
+
+```bash
+mix coveralls
+```
 
 ## Installation
 
