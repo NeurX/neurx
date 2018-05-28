@@ -3,16 +3,16 @@ defmodule NeurxCore do
   Documentation for NeurxCore.
   """
 
-  @doc """
-  Hello world.
+  use Application
 
-  ## Examples
+  def start(_type, _args) do
+    import Supervisor.Spec, warn: true
 
-      iex> NeurxCore.hello
-      :world
-
-  """
-  def hello do
-    :world
+    children = [
+      # Define children/workers and sub-supervisors to be supervised
+      # worker(NeurxCore.Worker, [arg1, arg2, arg3]), etc..
+    ]
+    opts = [strategy: :one_for_one, name: NeurxCore.Supervisor]
+    Supervisor.start_link(children, opts)
   end
 end
