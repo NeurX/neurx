@@ -1,9 +1,9 @@
-defmodule NeurxCore.Layer do
+defmodule Neurx.Layer do
   @moduledoc """
   List of neurons.
   """
 
-  alias NeurxCore.{Neuron, Layer}
+  alias Neurx.{Neuron, Layer}
 
   defstruct pid: nil, neurons: []
 

@@ -1,7 +1,7 @@
-defmodule NeurxCore.ConnectionTest do
+defmodule Neurx.ConnectionTest do
   use ExUnit.Case
-  doctest NeurxCore.Connection
+  doctest Neurx.Connection
 
-  alias NeurxCore.{Neuron, Connection}
+  alias Neurx.{Neuron, Connection}
 
 end

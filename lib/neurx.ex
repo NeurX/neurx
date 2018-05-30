@@ -1,6 +1,6 @@
-defmodule NeurxCore do
+defmodule Neurx do
   @moduledoc """
-  Documentation for NeurxCore.
+  Documentation for Neurx.
   """
 
   use Application
@@ -10,9 +10,9 @@ defmodule NeurxCore do
 
     children = [
       # Define children/workers and sub-supervisors to be supervised
-      # worker(NeurxCore.Worker, [arg1, arg2, arg3]), etc..
+      # worker(Neurx.Worker, [arg1, arg2, arg3]), etc..
     ]
-    opts = [strategy: :one_for_one, name: NeurxCore.Supervisor]
+    opts = [strategy: :one_for_one, name: Neurx.Supervisor]
     Supervisor.start_link(children, opts)
   end
 end

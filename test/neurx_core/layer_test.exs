@@ -1,7 +1,7 @@
-defmodule NeurxCore.LayerTest do
+defmodule Neurx.LayerTest do
   use ExUnit.Case
-  doctest NeurxCore.Layer
+  doctest Neurx.Layer
 
-  alias NeurxCore.{Neuron, Connection, Layer}
+  alias Neurx.{Neuron, Connection, Layer}
 
 end

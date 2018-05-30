@@ -1,5 +1,5 @@
-defmodule NeurxCoreTest do
+defmodule NeurxTest do
   use ExUnit.Case
-  doctest NeurxCore
+  doctest Neurx
 
 end

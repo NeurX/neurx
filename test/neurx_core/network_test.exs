@@ -1,7 +1,7 @@
-defmodule NeurxCore.NetworkTest do
+defmodule Neurx.NetworkTest do
   use ExUnit.Case
-  doctest NeurxCore.Network
+  doctest Neurx.Network
 
-  alias NeurxCore.{Layer, Network}
+  alias Neurx.{Layer, Network}
 
 end
