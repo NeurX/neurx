@@ -24,7 +24,7 @@ by adding `neurx` to your list of dependencies in `mix.exs`:
 ```elixir
 def deps do
   [
-    {:neurx_core, "~> 0.1.0"}
+    {:neurx, "~> 0.1.0"}
   ]
 end
 ```
