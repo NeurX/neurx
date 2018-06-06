@@ -3,45 +3,48 @@ defmodule Neurx do
   Documentation for Neurx.
   """
 
-  use Application
-  require Neurx.Network
-
-  @doc """
-  def start(_type, _args) do
-    import Supervisor.Spec, warn: true
-
-    children = [
-      # Define children/workers and sub-supervisors to be supervised
-      # worker(Neurx.Worker, [arg1, arg2, arg3]), etc..
-    ]
-    opts = [strategy: :one_for_one, name: Neurx.Supervisor]
-    Supervisor.start_link(children, opts)
-  end
-  """
+  alias Neurx.{Network}
 
   @loss_types ["MSE"]
   @default_loss [type: "MSE"]
+
+  @activation_types ["Sigmoid", "Relu"]
+  @default_activation [type: "Sigmoid"]
 
   @optim_types ["SGD"]
   @default_optim [type: "SGD", learning_rate: 0.1]
   @default_learning_rate 0.1
 
+  @doc """
+  Builds the network.
+  """
   def build(config) do
     if config[:input_layer] <= 0 do raise "Invalid size of input layer." end
-    if config[:output_layer] <= 0 do raise "Invalid size of output layer." end
+
+    # Sanitize the output layer config.
+    output_layer =
+      if config[:output_layer] != nil do
+        if config[:output_layer][:size] <= 0 do
+          raise "Invalid size of output layer."
+        end
+        [size: config[:output_layer][:size],
+         activation: sanitize_activation_functions(config[:activation])]
+      end
 
     # Sanitize hidden layer configs.
-    hidden_layers = []
+    hidden_layers = 
     if config[:hidden_layers] != nil do
-      Enum.each config[:hidden_layers], fn hl ->
+       Enum.map(config[:hidden_layers], fn hl ->
         size = hl[:size]
         if size != nil do
           if size <= 0 do raise "Invalid size of hidden layer." end
+          activation = sanitize_activation_functions(hl[:activation])
           prefuncs = sanitize_function_list(hl[:prefix_functions])
           suffuncs = sanitize_function_list(hl[:suffix_functions])
-          hidden_layers = hidden_layers ++ [size: size, prefix_functions: prefuncs, suffix_functions: suffuncs]
+          [size: size, activation: activation, prefix_functions: prefuncs, 
+           suffix_functions: suffuncs]
         end
-      end
+      end)
     end
 
     # Sanitize loss function config.
@@ -72,30 +75,65 @@ defmodule Neurx do
     # Recreating the config.
     sanitized_config = %{
       input_layer: config[:input_layer],
-      output_layer: config[:output_layer],
+      output_layer: output_layer,
       hidden_layers: hidden_layers,
       loss_function: loss,
       optimization_function: optim
     }
 
-    #{:ok, pid} = Network.create(sanitized_config)
-    #pid
-    nil
+    {:ok, pid} = Network.start_link(sanitized_config)
+    pid
+  end
+
+  defp sanitize_activation_functions(activ) do
+    if activ != nil do
+      if activ[:type] not in @activation_types do
+        raise "Invalid activation function."
+      else
+         [activation: activ[:type]]
+      end
+    else
+      [activation: @default_activation]
+    end
   end
 
   defp sanitize_function_list(funcs) do
-    functions = nil
-    if funcs != nil do
-      Enum.each funcs, fn f ->
-        if f != nil do
-          if functions == nil do
-            functions = [f]
-          else
-            functions = [functions | f]
-          end
-        end
+    funcs |>
+    Enum.map(fn f ->
+      if f != nil do
+        f
+      end
+    end)
+  end
+  
+  @doc """
+  Trains the network on the given data.
+  """
+  def train(network_pid, data, options \\ %{}) do
+    epochs = options.epochs
+    log_freqs = options.log_freqs
+    data_length = length(data)
+
+    for epoch <- 0..epochs do
+      average_error =
+        Enum.reduce(data, 0, fn sample, sum ->
+          # sum weighted inputs to produce output value of network
+          # that output will be compared with target output to find the delta
+          network_pid |> Network.get() |> Network.activate(sample.input)
+
+          # Backpropagation
+          network_pid |> Network.get() |> Network.train(sample.output)
+
+          sum + Network.get(network_pid).error / data_length
+        end)
+
+      if rem(epoch, log_freqs) == 0 || epoch + 1 == epochs do
+        IO.puts("Epoch: #{epoch}   Error: #{unexponential(average_error)}")
       end
     end
-    functions
+  end
+
+  defp unexponential(average_error) do
+    :erlang.float_to_binary(average_error, [{:decimals, 19}, :compact])
   end
 end
