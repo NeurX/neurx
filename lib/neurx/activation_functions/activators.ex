@@ -21,8 +21,10 @@ defmodule Neurx.Activators do
   end
 
   @doc """
+  Relu function. See more at: https://en.wikipedia.org/wiki/Rectifier_(neural_networks)
   """
-  #def relu(input) do
-  #end
+  def relu(input) do
+    max(0, input)
+  end
 
 end
