@@ -15,7 +15,7 @@ defmodule Neurx.Network do
   """
   def start_link(config) do
     {:ok, pid} = Agent.start_link(fn -> %Network{} end)
-    
+
     layers =
       map_layers(
         input_neurons(Map.get(config, :input_layer)),
@@ -52,20 +52,23 @@ defmodule Neurx.Network do
   end
 
   defp hidden_neurons(hidden_layers) do
-    hidden_layers
-    |> Enum.map(fn layer ->
-      size = Map.get(layer, :size)
-      activation_fn = Activators.retreiveFunction(Map.get(
-        Map.get(layer, :activation), :type)) 
-      {:ok, pid} = Layer.start_link(%{neuron_size: size, activation_fn: activation_fn})
-      pid
-    end)
+    if hidden_layers != nil do
+      hidden_layers
+      |> Enum.map(fn layer ->
+        size = Map.get(layer, :size)
+          {:ok, pid} = Layer.start_link(%{neuron_size: size,
+            activation_fn: Activators.retreiveFunction(Map.get(layer, :activation))})
+        pid
+      end)
+    else
+      []
+    end
   end
 
   defp output_neurons(layer_fields) do
     size = Map.get(layer_fields, :size)
     {:ok, pid} = Layer.start_link(%{neuron_size: Map.get(layer_fields, :size),
-                                    activation_fn: Map.get(layer_fields, :activation)})
+      activation_fn: Activators.retreiveFunction(Map.get(layer_fields, :activation))})
     pid
   end
 
@@ -85,7 +88,11 @@ defmodule Neurx.Network do
   end
 
   defp flatten_layers(network) do
-    [network.input_layer] ++ network.hidden_layers ++ [network.output_layer]
+    if network.hidden_layers != nil do
+      [network.input_layer] ++ network.hidden_layers ++ [network.output_layer]
+    else
+      [network.input_layer] ++ [network.output_layer]
+    end
   end
 
   @doc """

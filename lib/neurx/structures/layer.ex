@@ -12,7 +12,7 @@ defmodule Neurx.Layer do
     {:ok, pid} = Agent.start_link(fn -> %Layer{} end)
     neurons = create_neurons(Map.get(layer_fields, :neuron_size),
                                      Map.get(layer_fields, :activation_fn))
-    pid |> update(%{pid: pid, neurons: neurons})
+    pid |> update(%{pid: pid, neurons: neurons, activation_fn: Map.get(layer_fields, :activation_fn)})
 
     {:ok, pid}
   end

@@ -9,6 +9,7 @@ defmodule Neurx.Optimizers do
   def retreiveFunction(type) do
     case type do
       "SGD" -> nil
+      nil -> nil #TODO: set this to an actual default.
     end
   end
 

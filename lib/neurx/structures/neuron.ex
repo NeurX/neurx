@@ -18,10 +18,10 @@ defmodule Neurx.Neuron do
   @doc """
   Create a neuron agent
   """
-  # {:ok, pid} = Neuron.start_link(%{activation_fn: activation_fn})
   def start_link(neuron_fields \\ %{}) do
     {:ok, pid} = Agent.start_link(fn -> %Neuron{} end)
-
+    IO.puts inspect(neuron_fields)
+    # TODO: Figure out why the activation is coming back null for test 2.
     pid |> update(%{pid: pid, activation_fn: Map.get(neuron_fields, :activation_fn)})
 
     {:ok, pid}
@@ -29,11 +29,6 @@ defmodule Neurx.Neuron do
 
   @doc """
   ## Pass in the pid, and a map to update values of a neuron
-      iex> {:ok, pid} = NeuralNetwork.Neuron.start_link
-      ...> NeuralNetwork.Neuron.update(pid, %{input: 3, output: 2, incoming: [1], outgoing: [2], bias?: true, delta: 1})
-      ...> neuron = NeuralNetwork.Neuron.get(pid)
-      ...> neuron.output
-      2
   """
   def update(pid, neuron_fields) do
     Agent.update(pid, &Map.merge(&1, neuron_fields))

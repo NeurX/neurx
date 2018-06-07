@@ -11,6 +11,7 @@ defmodule Neurx.LossFunctions do
   def retreiveFunction(type) do
     case type do
       "MSE" -> fn n, tar_out -> mseBackPropagation(n, tar_out) end
+      nil -> fn n, tar_out -> mseBackPropagation(n, tar_out) end
     end
   end
 
