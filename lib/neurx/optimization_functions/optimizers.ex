@@ -8,8 +8,9 @@ defmodule Neurx.Optimizers do
   """
   def retreiveFunction(type) do
     case type do
-      "SGD" -> nil
-      nil -> nil #TODO: set this to an actual default.
+      # TODO: Implement this file.
+      "SGD" -> fn n -> nil end
+      nil -> raise "Invalid Optimization function."
     end
   end
 

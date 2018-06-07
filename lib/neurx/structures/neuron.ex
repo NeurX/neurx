@@ -20,9 +20,9 @@ defmodule Neurx.Neuron do
   """
   def start_link(neuron_fields \\ %{}) do
     {:ok, pid} = Agent.start_link(fn -> %Neuron{} end)
-    IO.puts inspect(neuron_fields)
-    # TODO: Figure out why the activation is coming back null for test 2.
-    pid |> update(%{pid: pid, activation_fn: Map.get(neuron_fields, :activation_fn)})
+    
+    pid |> update(%{pid: pid, activation_fn: Map.get(neuron_fields, :activation_fn),
+      bias?: Map.get(neuron_fields, :bias?)})
 
     {:ok, pid}
   end

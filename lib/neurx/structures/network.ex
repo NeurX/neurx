@@ -24,9 +24,9 @@ defmodule Neurx.Network do
       )
 
     pid |> update(layers)
-    pid |> update(%{optimization_fn: Optimizers.retreiveFunction(
-      Map.get(config, :optim_fn)), 
-      loss_fn: LossFunctions.retreiveFunction(Map.get(config, :loss_fn))})
+    pid |> update(%{optim_fn: Optimizers.retreiveFunction(
+      Map.get(Map.get(config, :optimization_function), :type)), 
+      loss_fn: LossFunctions.retreiveFunction(Map.get(Map.get(config, :loss_function), :type))})
     pid |> connect_layers
 
     {:ok, pid}
@@ -74,7 +74,7 @@ defmodule Neurx.Network do
 
   defp connect_layers(pid) do
     layers = pid |> Network.get() |> flatten_layers
-
+    
     layers
     |> Stream.with_index()
     |> Enum.each(fn tuple ->

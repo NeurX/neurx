@@ -9,7 +9,8 @@ defmodule Neurx.Activators do
   def retreiveFunction(type) do
     case type do
       "Sigmoid" -> fn input -> sigmoid(input) end
-      #"Relu" -> fn input -> relu(input) end
+      "Relu" -> fn input -> relu(input) end
+      nil -> raise "Invalid Activation function."
     end
   end
 
