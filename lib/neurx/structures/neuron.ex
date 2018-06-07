@@ -7,13 +7,7 @@ defmodule Neurx.Neuron do
 
   alias Neurx.{Neuron, Connection}
 
-  defstruct pid: nil, input: 0, output: 0, incoming: [], outgoing: [], bias?: false, delta: 0, activation_fn: nil
-
-  @learning_rate 0.3
-
-  def learning_rate do
-    @learning_rate
-  end
+  defstruct pid: nil, input: 0, output: 0, incoming: [], outgoing: [], bias?: false, delta: 0, activation_fn: nil, learning_rate: nil
 
   @doc """
   Create a neuron agent
@@ -21,8 +15,8 @@ defmodule Neurx.Neuron do
   def start_link(neuron_fields \\ %{}) do
     {:ok, pid} = Agent.start_link(fn -> %Neuron{} end)
     
-    pid |> update(%{pid: pid, activation_fn: Map.get(neuron_fields, :activation_fn),
-      bias?: Map.get(neuron_fields, :bias?)})
+    pid |> update(%{pid: pid})
+    pid |> update(neuron_fields)
 
     {:ok, pid}
   end
@@ -128,7 +122,7 @@ defmodule Neurx.Neuron do
     for connection_pid <- neuron.outgoing do
       connection = Connection.get(connection_pid)
       gradient = neuron.output * get(connection.target_pid).delta
-      updated_weight = connection.weight - gradient * learning_rate()
+      updated_weight = connection.weight - gradient * neuron.learning_rate
       Connection.update(connection_pid, %{weight: updated_weight})
     end
   end

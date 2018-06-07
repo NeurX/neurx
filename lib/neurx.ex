@@ -19,7 +19,13 @@ defmodule Neurx do
   Builds the network.
   """
   def build(config) do
-    if config[:input_layer] <= 0 do raise "Invalid size of input layer." end
+    if config == %{} or config == nil do
+      raise "Configuration is empty or nil."
+    end
+
+    if config[:input_layer] <= 0 do
+      raise "Invalid size of input layer."
+    end
 
     # Sanitize the output layer config.
     output_layer =
@@ -37,7 +43,9 @@ defmodule Neurx do
         Enum.map(config[:hidden_layers], fn hl ->
           size = hl[:size]
           if size != nil do
-            if size <= 0 do raise "Invalid size of hidden layer." end
+            if size <= 0 do
+              raise "Invalid size of hidden layer."
+            end
             activation = sanitize_activation_functions(hl[:activation])
             prefuncs = sanitize_function_list(hl[:prefix_functions])
             suffuncs = sanitize_function_list(hl[:suffix_functions])
@@ -50,9 +58,13 @@ defmodule Neurx do
     # Sanitize loss function config.
     loss = 
       if config[:loss_function] != nil do
-        if config[:loss_function][:type] == nil do raise "Loss type cannot be null." end
-        if config[:loss_function][:type] not in @loss_types do raise "Unknown loss type." end
-          %{type: config[:loss_function][:type]}
+        if config[:loss_function][:type] == nil do
+          raise "Loss type cannot be null."
+        end
+        if config[:loss_function][:type] not in @loss_types do
+          raise "Unknown loss type."
+        end
+        %{type: config[:loss_function][:type]}
       else
         @default_loss
       end
@@ -60,13 +72,17 @@ defmodule Neurx do
       # Sanitize optim function config.
     optim =
       if config[:optim_function] != nil do
-        if config[:optim_function][:type] == nil do raise "Optimization type cannot be null." end
-        if config[:optim_function][:type] not in @optim_types do raise "Unknown optimization type." end
-          otype = config[:optim_function][:type]
-          if config[:optim_functions][:learning_rate] > 0 do
-            %{type: otype, learning_rate: config[:optim_functions][:learning_rate]}
-          else
-            %{type: otype, learning_rate: @default_learning_rate}
+        if config[:optim_function][:type] == nil do
+          raise "Optimization type cannot be null."
+        end
+        if config[:optim_function][:type] not in @optim_types do
+          raise "Unknown optimization type."
+        end
+        otype = config[:optim_function][:type]
+        if config[:optim_function][:learning_rate] > 0 and config[:optim_function][:learning_rate]/2 do
+          %{type: otype, learning_rate: config[:optim_function][:learning_rate]}
+        else
+          raise "Invalid learning rate."
         end
       else
         @default_optim
@@ -108,36 +124,5 @@ defmodule Neurx do
     else
       []
     end
-  end
-  
-  @doc """
-  Trains the network on the given data.
-  """
-  def train(network_pid, data, options \\ %{}) do
-    epochs = options.epochs
-    log_freqs = options.log_freqs
-    data_length = length(data)
-
-    for epoch <- 0..epochs do
-      average_error =
-        Enum.reduce(data, 0, fn sample, sum ->
-          # sum weighted inputs to produce output value of network
-          # that output will be compared with target output to find the delta
-          network_pid |> Network.get() |> Network.activate(sample.input)
-
-          # Backpropagation
-          network_pid |> Network.get() |> Network.train(sample.output)
-
-          sum + Network.get(network_pid).error / data_length
-        end)
-
-      if rem(epoch, log_freqs) == 0 || epoch + 1 == epochs do
-        IO.puts("Epoch: #{epoch}   Error: #{unexponential(average_error)}")
-      end
-    end
-  end
-
-  defp unexponential(average_error) do
-    :erlang.float_to_binary(average_error, [{:decimals, 19}, :compact])
   end
 end

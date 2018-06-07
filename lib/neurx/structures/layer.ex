@@ -6,13 +6,15 @@ defmodule Neurx.Layer do
 
   alias Neurx.{Neuron, Layer}
 
-  defstruct pid: nil, neurons: [], activation_fn: nil
+  defstruct pid: nil, neurons: [], activation_fn: nil, learning_rate: nil
 
   def start_link(layer_fields \\ %{}) do
     {:ok, pid} = Agent.start_link(fn -> %Layer{} end)
-    neurons = create_neurons(Map.get(layer_fields, :neuron_size),
-                                     Map.get(layer_fields, :activation_fn))
-    pid |> update(%{pid: pid, neurons: neurons, activation_fn: Map.get(layer_fields, :activation_fn)})
+
+    neurons = create_neurons(Map.get(layer_fields, :neuron_size), layer_fields)
+    
+    pid |> update(%{pid: pid, neurons: neurons})
+    pid |> update(layer_fields)
 
     {:ok, pid}
   end
@@ -30,12 +32,11 @@ defmodule Neurx.Layer do
   end
 
   defp create_neurons(nil, nil), do: []
-  defp create_neurons(nil, activation_fn), do: []
-  defp create_neurons(size, activation_fn) when size < 1, do: []
-
-  defp create_neurons(size, activation_fn) when size > 0 do
+  defp create_neurons(nil, fields), do: []
+  defp create_neurons(size, fields) when size < 1, do: []
+  defp create_neurons(size, fields) when size > 0 do
     Enum.into(1..size, [], fn _ ->
-      {:ok, pid} = Neuron.start_link(%{activation_fn: activation_fn})
+      {:ok, pid} = Neuron.start_link(fields)
       pid
     end)
   end
@@ -82,7 +83,7 @@ defmodule Neurx.Layer do
     input_layer = get(input_layer_pid)
 
     unless contains_bias?(input_layer) do
-      {:ok, pid} = Neuron.start_link(%{bias?: true})
+      {:ok, pid} = Neuron.start_link(%{bias?: true, learning_rate: input_layer.learning_rate})
       input_layer_pid |> add_neurons([pid])
     end
 
