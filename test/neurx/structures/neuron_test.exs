@@ -189,7 +189,7 @@ defmodule Neurx.NeuronTest do
       {delta, index} = tuple
 
       if Enum.at(deltas, index + 1) do
-        assert delta < Enum.at(deltas, index + 1)
+        assert(delta < Enum.at(deltas, index + 1))
       end
     end)
   end

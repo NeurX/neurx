@@ -49,22 +49,6 @@ defmodule Neurx.Layer do
   end
 
   @doc """
-  Empty out the layer of all neurons.
-  """
-  def clear_neurons(layer_pid) do
-    layer_pid |> update(%{neurons: []})
-  end
-
-  @doc """
-  Clear and set neurons in the layer with a given list of neurons.
-  """
-  def set_neurons(layer_pid, neurons) do
-    layer_pid
-    |> clear_neurons
-    |> add_neurons(neurons)
-  end
-
-  @doc """
   Update all deltas for each neuron.
   """
   def train(layer, target_outputs \\ []) do
