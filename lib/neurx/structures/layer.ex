@@ -6,7 +6,7 @@ defmodule Neurx.Layer do
 
   alias Neurx.{Neuron, Layer}
 
-  defstruct pid: nil, neurons: [], activation_fn: nil, learning_rate: nil
+  defstruct pid: nil, neurons: [], activation_fn: nil, learning_rate: nil, optim_fn: nil
 
   def start_link(layer_fields \\ %{}) do
     {:ok, pid} = Agent.start_link(fn -> %Layer{} end)
@@ -83,7 +83,8 @@ defmodule Neurx.Layer do
     input_layer = get(input_layer_pid)
 
     unless contains_bias?(input_layer) do
-      {:ok, pid} = Neuron.start_link(%{bias?: true, learning_rate: input_layer.learning_rate})
+      {:ok, pid} = Neuron.start_link(%{bias?: true, learning_rate: input_layer.learning_rate,
+        optim_fn: input_layer.optim_fn})
       input_layer_pid |> add_neurons([pid])
     end
 

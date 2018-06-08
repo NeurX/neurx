@@ -7,7 +7,7 @@ defmodule Neurx.Neuron do
 
   alias Neurx.{Neuron, Connection}
 
-  defstruct pid: nil, input: 0, output: 0, incoming: [], outgoing: [], bias?: false, delta: 0, activation_fn: nil, learning_rate: nil
+  defstruct pid: nil, input: 0, output: 0, incoming: [], outgoing: [], bias?: false, delta: 0, activation_fn: nil, learning_rate: nil, optim_fn: nil
 
   @doc """
   Create a neuron agent
@@ -95,7 +95,7 @@ defmodule Neurx.Neuron do
       end
     end
 
-    neuron.pid |> get |> update_outgoing_weights
+    neuron.pid |> get |> neuron.optim_fn
   end
 
   defp output_neuron?(neuron) do
@@ -114,16 +114,5 @@ defmodule Neurx.Neuron do
       end)
 
     neuron.pid |> update(%{delta: delta})
-  end
-
-  # Gradient descent: updating weights of inputs of neuron during backprop
-  # https://en.m.wikipedia.org/wiki/Delta_rule
-  defp update_outgoing_weights(neuron) do
-    for connection_pid <- neuron.outgoing do
-      connection = Connection.get(connection_pid)
-      gradient = neuron.output * get(connection.target_pid).delta
-      updated_weight = connection.weight - gradient * neuron.learning_rate
-      Connection.update(connection_pid, %{weight: updated_weight})
-    end
   end
 end

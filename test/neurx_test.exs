@@ -46,16 +46,19 @@ defmodule NeurxTest do
     assert(input_layer)
     assert(length(input_layer.neurons) == 3)
     assert(input_layer.activation_fn == nil)
+    assert(input_layer.optim_fn == sgd)
     
     assert(output_layer)
     assert(length(output_layer.neurons) == 1)
     assert(output_layer.activation_fn == sigmoid)
+    assert(output_layer.optim_fn == sgd)
 
     Enum.each(input_layer.neurons, fn pid ->
       neuron = Neuron.get(pid)
       assert(neuron)
       assert(neuron.activation_fn == nil)
       assert(neuron.learning_rate == 0.1)
+      assert(neuron.optim_fn == sgd)
     end)
     
     Enum.each(output_layer.neurons, fn pid ->
@@ -63,6 +66,7 @@ defmodule NeurxTest do
       assert(neuron)
       assert(neuron.activation_fn == sigmoid)
       assert(neuron.learning_rate == 0.1)
+      assert(neuron.optim_fn == sgd)
     end)
   end
 
@@ -103,16 +107,19 @@ defmodule NeurxTest do
     assert(input_layer)
     assert(length(input_layer.neurons) == 4)
     assert(input_layer.activation_fn == nil)
+    assert(input_layer.optim_fn == sgd)
     
     assert(output_layer)
     assert(length(output_layer.neurons) == 1)
     assert(output_layer.activation_fn == sigmoid)
+    assert(output_layer.optim_fn == sgd)
 
     Enum.each(input_layer.neurons, fn pid ->
       neuron = Neuron.get(pid)
       assert(neuron)
       assert(neuron.activation_fn == nil)
       assert(neuron.learning_rate == 0.1)
+      assert(neuron.optim_fn == sgd)
     end)
     
     Enum.each(output_layer.neurons, fn pid ->
@@ -120,6 +127,7 @@ defmodule NeurxTest do
       assert(neuron)
       assert(neuron.activation_fn == sigmoid)
       assert(neuron.learning_rate == 0.1)
+      assert(neuron.optim_fn == sgd)
     end)
   end
   
@@ -169,6 +177,7 @@ defmodule NeurxTest do
     assert(input_layer)
     assert(length(input_layer.neurons) == 4)
     assert(input_layer.activation_fn == nil)
+    assert(input_layer.optim_fn == sgd)
 
     Enum.each(network.hidden_layers, fn lpid ->
       layer = Layer.get(lpid)
@@ -179,6 +188,7 @@ defmodule NeurxTest do
         neuron = Neuron.get(npid)
         assert(neuron)
         assert(neuron.learning_rate == 0.1)
+        assert(neuron.optim_fn == sgd)
         if neuron.bias? do
           assert(neuron.activation_fn == nil)
         else
@@ -190,6 +200,7 @@ defmodule NeurxTest do
     assert(output_layer)
     assert(length(output_layer.neurons) == 1)
     assert(output_layer.activation_fn == sigmoid)
+    assert(output_layer.optim_fn == sgd)
 
     Enum.each(input_layer.neurons, fn pid ->
       neuron = Neuron.get(pid)
@@ -264,6 +275,7 @@ defmodule NeurxTest do
     assert(input_layer)
     assert(length(input_layer.neurons) == 101)
     assert(input_layer.activation_fn == nil)
+    assert(input_layer.optim_fn == sgd)
 
     hl1 = Enum.at(network.hidden_layers, 0)
     hlayer1 = Layer.get(hl1)
@@ -274,6 +286,7 @@ defmodule NeurxTest do
       neuron = Neuron.get(npid)
       assert(neuron)
       assert(neuron.learning_rate == 0.3)
+      assert(neuron.optim_fn == sgd)
       if neuron.bias? do
         assert(neuron.activation_fn == nil)
       else
@@ -290,6 +303,7 @@ defmodule NeurxTest do
       neuron = Neuron.get(npid)
       assert(neuron)
       assert(neuron.learning_rate == 0.3)
+      assert(neuron.optim_fn == sgd)
       if neuron.bias? do
         assert(neuron.activation_fn == nil)
       else
@@ -300,6 +314,7 @@ defmodule NeurxTest do
     assert(output_layer)
     assert(length(output_layer.neurons) == 2)
     assert(output_layer.activation_fn == sigmoid)
+    assert(output_layer.optim_fn == sgd)
 
     Enum.each(input_layer.neurons, fn pid ->
       neuron = Neuron.get(pid)
@@ -316,6 +331,9 @@ defmodule NeurxTest do
     end)
   end
 
+  # TODO: prefix and suffix functions don't do anything right now.
+  # Once they actually do something we will need to add some asserts
+  # to make sure they are where they are supposed to be.
   test "Create network with hidden layer containing prefix & suffix functions." do
     pref = fn n -> n * 0.1 end
     suff = fn n -> n / 0.2 end
@@ -364,6 +382,7 @@ defmodule NeurxTest do
     assert(input_layer)
     assert(length(input_layer.neurons) == 4)
     assert(input_layer.activation_fn == nil)
+    assert(input_layer.optim_fn == sgd)
 
     Enum.each(network.hidden_layers, fn lpid ->
       layer = Layer.get(lpid)
@@ -374,6 +393,7 @@ defmodule NeurxTest do
         neuron = Neuron.get(npid)
         assert(neuron)
         assert(neuron.learning_rate == 0.1)
+        assert(neuron.optim_fn == sgd)
         if neuron.bias? do
           assert(neuron.activation_fn == nil)
         else
@@ -385,6 +405,7 @@ defmodule NeurxTest do
     assert(output_layer)
     assert(length(output_layer.neurons) == 1)
     assert(output_layer.activation_fn == sigmoid)
+    assert(output_layer.optim_fn == sgd)
 
     Enum.each(input_layer.neurons, fn pid ->
       neuron = Neuron.get(pid)

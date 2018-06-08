@@ -10,26 +10,26 @@ defmodule Neurx.LossFunctions do
   """
   def retreiveFunction(type) do
     case type do
-      "MSE" -> fn n, tar_out -> mseBackPropagation(n, tar_out) end
+      "MSE" -> fn act_out, tar_out -> mean_squared_error(act_out, tar_out) end
       nil -> raise "Invalid Loss Function."
+      _ -> raise "Unknown Loss Function."
     end
   end
 
   @doc """
-  Mean Squared Error backpropagations.
-  https://en.wikipedia.org/wiki/Backpropagation#Derivation
+  Mean Squared Error.
   """
-  def mseBackPropagation(network, target_outputs) do
-    (Layer.get(network.output_layer).neurons
+  def mean_squared_error(actual_outputs, target_outputs) do
+    (actual_outputs
      |> Stream.with_index()
      |> Enum.reduce(0, fn {neuron, index}, sum ->
        target_output = Enum.at(target_outputs, index)
        actual_output = Neuron.get(neuron).output
        squared_error(sum, target_output, actual_output)
-     end)) / length(Layer.get(network.output_layer).neurons)
+     end)) / length(actual_outputs)
   end
 
   defp squared_error(sum, target_output, actual_output) do
-    sum + 0.5 * :math.pow(target_output - actual_output, 2)
+    sum + :math.pow(target_output - actual_output, 2)
   end
 end

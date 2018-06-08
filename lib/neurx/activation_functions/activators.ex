@@ -10,7 +10,8 @@ defmodule Neurx.Activators do
     case type do
       "Sigmoid" -> fn input -> sigmoid(input) end
       "Relu" -> fn input -> relu(input) end
-      nil -> raise "Invalid Activation function."
+      nil -> raise "Invalid Activation Function."
+      _ -> raise "Unknown Activation Function."
     end
   end
 

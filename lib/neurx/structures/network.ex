@@ -16,16 +16,16 @@ defmodule Neurx.Network do
   def start_link(config) do
     {:ok, pid} = Agent.start_link(fn -> %Network{} end)
 
-    learning_rate = Map.get(Map.get(config, :optimization_function), :learning_rate) 
+    learning_rate = Map.get(Map.get(config, :optimization_function), :learning_rate)
+    optimization_fn = Optimizers.retreiveFunction(Map.get(Map.get(config, :optimization_function), :type))
     layers =
       map_layers(
-        input_neurons(Map.get(config, :input_layer), learning_rate),
-        hidden_neurons(Map.get(config, :hidden_layers), learning_rate),
-        output_neurons(Map.get(config, :output_layer), learning_rate)
+        input_neurons(Map.get(config, :input_layer), learning_rate, optimization_fn),
+        hidden_neurons(Map.get(config, :hidden_layers), learning_rate, optimization_fn),
+        output_neurons(Map.get(config, :output_layer), learning_rate, optimization_fn)
       )
     pid |> update(layers)
 
-    optimization_fn = Optimizers.retreiveFunction(Map.get(Map.get(config, :optimization_function), :type))
     loss_fn = LossFunctions.retreiveFunction(Map.get(Map.get(config, :loss_function), :type))
     pid |> update(%{optim_fn: optimization_fn, loss_fn: loss_fn})
 
@@ -48,19 +48,19 @@ defmodule Neurx.Network do
     Agent.update(pid, &Map.merge(&1, fields))
   end
 
-  defp input_neurons(size, learning_rate) do
-    {:ok, pid} = Layer.start_link(%{neuron_size: size, learning_rate: learning_rate})
+  defp input_neurons(size, learning_rate, optim_fn) do
+    {:ok, pid} = Layer.start_link(%{neuron_size: size, learning_rate: learning_rate, optim_fn: optim_fn})
     pid
   end
 
-  defp hidden_neurons(hidden_layers, learning_rate) do
+  defp hidden_neurons(hidden_layers, learning_rate, optim_fn) do
     if hidden_layers != nil do
       hidden_layers
       |> Enum.map(fn layer ->
         size = Map.get(layer, :size)
         activation_fn = Activators.retreiveFunction(Map.get(layer, :activation))
         {:ok, pid} = Layer.start_link(%{neuron_size: size, activation_fn: activation_fn,
-          learning_rate: learning_rate})
+          learning_rate: learning_rate, optim_fn: optim_fn})
         pid
       end)
     else
@@ -68,10 +68,11 @@ defmodule Neurx.Network do
     end
   end
 
-  defp output_neurons(layer_fields, learning_rate) do
+  defp output_neurons(layer_fields, learning_rate, optim_fn) do
     size = Map.get(layer_fields, :size)
     activation_fn = Activators.retreiveFunction(Map.get(layer_fields, :activation))
-    {:ok, pid} = Layer.start_link(%{neuron_size: size, activation_fn: activation_fn, learning_rate: learning_rate})
+    {:ok, pid} = Layer.start_link(%{neuron_size: size, activation_fn: activation_fn, learning_rate: learning_rate,
+      optim_fn: optim_fn})
     pid
   end
 
@@ -119,7 +120,8 @@ defmodule Neurx.Network do
   """
   def train(network, target_outputs) do
     network.output_layer |> Layer.get() |> Layer.train(target_outputs)
-    network.pid |> update(%{error: network.loss_function(network, target_outputs)})
+    actual_outputs = (Layer.get(network.output_layer)).neurons
+    network.pid |> update(%{error: network.loss_function(actual_outputs, target_outputs)})
 
     network.hidden_layers
     |> Enum.reverse()
