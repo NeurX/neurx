@@ -8,7 +8,7 @@ defmodule NeurxTest do
   # Network Building Tests
   ###############################################
   
-  test "Create all default 2:1 network." do
+  test "Create a default 2:1 network." do
     nn = Neurx.build(%{
       input_layer: 2,
       output_layer: %{
