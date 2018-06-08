@@ -32,8 +32,8 @@ defmodule Neurx.Layer do
   end
 
   defp create_neurons(nil, nil), do: []
-  defp create_neurons(nil, fields), do: []
-  defp create_neurons(size, fields) when size < 1, do: []
+  defp create_neurons(nil, _), do: []
+  defp create_neurons(size, _) when size < 1, do: []
   defp create_neurons(size, fields) when size > 0 do
     Enum.into(1..size, [], fn _ ->
       {:ok, pid} = Neuron.start_link(fields)

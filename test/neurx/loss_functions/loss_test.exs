@@ -2,7 +2,7 @@ defmodule Neurx.LossFunctionsTest do
   use ExUnit.Case
   doctest Neurx.LossFunctions
 
-  alias Neurx.{LossFunctions, Network, Layer, Neuron}
+  alias Neurx.{LossFunctions, Network, Layer}
   
   test "Testing function retrieval." do
     assert(LossFunctions.getFunction("MSE"))

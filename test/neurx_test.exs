@@ -449,7 +449,7 @@ defmodule NeurxTest do
 
   test "Empty build config." do
     try do
-      nn = Neurx.build(%{})
+      Neurx.build(%{})
       assert(false) # should not reach here.
     rescue
       RuntimeError -> nil
@@ -458,7 +458,7 @@ defmodule NeurxTest do
 
   test "Nil build config." do
     try do
-      nn = Neurx.build(nil)
+      Neurx.build(nil)
       assert(false) # should not reach here.
     rescue
       RuntimeError -> nil
@@ -467,7 +467,7 @@ defmodule NeurxTest do
 
   test "Invalid input size." do
     try do
-      nn = Neurx.build(%{
+      Neurx.build(%{
         input_layer: -3,
         output_layer: %{
           size: 1
@@ -479,7 +479,7 @@ defmodule NeurxTest do
     end
     
     try do
-      nn = Neurx.build(%{
+      Neurx.build(%{
         input_layer: "hello",
         output_layer: %{
           size: 1
@@ -493,7 +493,7 @@ defmodule NeurxTest do
 
   test "Invalid output size." do
     try do
-      nn = Neurx.build(%{
+      Neurx.build(%{
         input_layer: 3,
         output_layer: %{
           size: 0
@@ -505,7 +505,7 @@ defmodule NeurxTest do
     end
     
     try do
-      nn = Neurx.build(%{
+      Neurx.build(%{
         input_layer: 2,
         output_layer: %{
           size: "NO"
@@ -519,7 +519,7 @@ defmodule NeurxTest do
 
   test "Invalid hidden layer size." do
     try do
-      nn = Neurx.build(%{
+      Neurx.build(%{
         input_layer: 3,
         output_layer: %{
           size: 1
@@ -536,7 +536,7 @@ defmodule NeurxTest do
     end
     
     try do
-      nn = Neurx.build(%{
+      Neurx.build(%{
         input_layer: 3,
         output_layer: %{
           size: 1
@@ -555,7 +555,7 @@ defmodule NeurxTest do
   
   test "Unknown Activation function on output layer." do
     try do
-      nn = Neurx.build(%{
+      Neurx.build(%{
         input_layer: 3,
         output_layer: %{
           size: 1,
@@ -572,7 +572,7 @@ defmodule NeurxTest do
   
   test "Unknown Activation function on hidden layer." do
     try do
-      nn = Neurx.build(%{
+      Neurx.build(%{
         input_layer: 3,
         output_layer: %{
           size: 1
@@ -594,7 +594,7 @@ defmodule NeurxTest do
   
   test "Unknown loss function." do
     try do
-      nn = Neurx.build(%{
+      Neurx.build(%{
         input_layer: 100,
         output_layer: %{
           size: 2
@@ -611,7 +611,7 @@ defmodule NeurxTest do
   
   test "Unknown optimization function." do
     try do
-      nn = Neurx.build(%{
+      Neurx.build(%{
         input_layer: 100,
         output_layer: %{
           size: 1
@@ -629,7 +629,7 @@ defmodule NeurxTest do
   
   test "Invalid learning rate." do
     try do
-      nn = Neurx.build(%{
+      Neurx.build(%{
         input_layer: 100,
         output_layer: %{
           size: 1
@@ -645,7 +645,7 @@ defmodule NeurxTest do
     end
     
     try do
-      nn = Neurx.build(%{
+      Neurx.build(%{
         input_layer: 100,
         output_layer: %{
           size: 1
