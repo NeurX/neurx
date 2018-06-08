@@ -3,10 +3,6 @@ defmodule NeurxTest do
   doctest Neurx
 
   alias Neurx.{Network, Layer, Neuron, Activators, LossFunctions, Optimizers}
-
-  # TODO: Added test cases for invalid configs.
-  # TODO: Add test for each module from other repo.
-  # TODO: Look into making optimization code modular.
   
   ###############################################
   # Network Building Tests
