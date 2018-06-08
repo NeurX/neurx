@@ -5,15 +5,15 @@ defmodule Neurx.LossFunctionsTest do
   alias Neurx.{LossFunctions, Network, Layer, Neuron}
   
   test "Testing function retrieval." do
-    assert(LossFunctions.retreiveFunction("MSE"))
+    assert(LossFunctions.getFunction("MSE"))
     try do
-      assert(LossFunctions.retreiveFunction("REKT"))
+      assert(LossFunctions.getFunction("REKT"))
       assert(false) # Should not get here.
     rescue
       RuntimeError -> nil
     end
     try do
-      assert(LossFunctions.retreiveFunction(nil))
+      assert(LossFunctions.getFunction(nil))
       assert(false) # Should not get here.
     rescue
       RuntimeError -> nil

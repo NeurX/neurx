@@ -17,7 +17,7 @@ defmodule Neurx.Network do
     {:ok, pid} = Agent.start_link(fn -> %Network{} end)
 
     learning_rate = Map.get(Map.get(config, :optimization_function), :learning_rate)
-    optimization_fn = Optimizers.retreiveFunction(Map.get(Map.get(config, :optimization_function), :type))
+    optimization_fn = Optimizers.getFunction(Map.get(Map.get(config, :optimization_function), :type))
     layers =
       map_layers(
         input_neurons(Map.get(config, :input_layer), learning_rate, optimization_fn),
@@ -26,7 +26,7 @@ defmodule Neurx.Network do
       )
     pid |> update(layers)
 
-    loss_fn = LossFunctions.retreiveFunction(Map.get(Map.get(config, :loss_function), :type))
+    loss_fn = LossFunctions.getFunction(Map.get(Map.get(config, :loss_function), :type))
     pid |> update(%{optim_fn: optimization_fn, loss_fn: loss_fn})
 
     pid |> connect_layers
@@ -58,7 +58,7 @@ defmodule Neurx.Network do
       hidden_layers
       |> Enum.map(fn layer ->
         size = Map.get(layer, :size)
-        activation_fn = Activators.retreiveFunction(Map.get(layer, :activation))
+        activation_fn = Activators.getFunction(Map.get(layer, :activation))
         {:ok, pid} = Layer.start_link(%{neuron_size: size, activation_fn: activation_fn,
           learning_rate: learning_rate, optim_fn: optim_fn})
         pid
@@ -70,9 +70,10 @@ defmodule Neurx.Network do
 
   defp output_neurons(layer_fields, learning_rate, optim_fn) do
     size = Map.get(layer_fields, :size)
-    activation_fn = Activators.retreiveFunction(Map.get(layer_fields, :activation))
-    {:ok, pid} = Layer.start_link(%{neuron_size: size, activation_fn: activation_fn, learning_rate: learning_rate,
-      optim_fn: optim_fn})
+    activation_fn = Activators.getFunction(Map.get(layer_fields, :activation))
+    delta_fn = Activators.getDeltaFunction(Map.get(layer_fields, :activation))
+    {:ok, pid} = Layer.start_link(%{neuron_size: size, activation_fn: activation_fn, delta_fn: delta_fn,
+      learning_rate: learning_rate, optim_fn: optim_fn})
     pid
   end
 

@@ -5,15 +5,15 @@ defmodule Neurx.OptimizersTest do
   alias Neurx.{Optimizers, Network, Layer, Neuron, Connection}
 
   test "Testing function retrieval." do
-    assert(Optimizers.retreiveFunction("SGD"))
+    assert(Optimizers.getFunction("SGD"))
     try do
-      assert(Optimizers.retreiveFunction("REKT"))
+      assert(Optimizers.getFunction("REKT"))
       assert(false) # Should not get here.
     rescue
       RuntimeError -> nil
     end
     try do
-      assert(Optimizers.retreiveFunction(nil))
+      assert(Optimizers.getFunction(nil))
       assert(false) # Should not get here.
     rescue
       RuntimeError -> nil

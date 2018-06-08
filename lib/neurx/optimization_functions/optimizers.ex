@@ -8,7 +8,7 @@ defmodule Neurx.Optimizers do
   @doc """
   Returns the function given its name as a string.
   """
-  def retreiveFunction(type) do
+  def getFunction(type) do
     case type do
       "SGD" -> fn neuron -> stochastic_gradient_descent(neuron) end
       nil -> raise "Invalid Optimization Function."

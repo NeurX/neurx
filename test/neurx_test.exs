@@ -33,10 +33,12 @@ defmodule NeurxTest do
     input_layer = Layer.get(network.input_layer)
     output_layer = Layer.get(network.output_layer)
 
-    sigmoid = Activators.retreiveFunction("Sigmoid")
-    mse = LossFunctions.retreiveFunction("MSE")
-    sgd = Optimizers.retreiveFunction("SGD")
+    sigmoid = Activators.getFunction("Sigmoid")
+    sigmoid_derv = Activators.getDeltaFunction("Sigmoid")
+    mse = LossFunctions.getFunction("MSE")
+    sgd = Optimizers.getFunction("SGD")
     assert(sigmoid)
+    assert(sigmoid_derv)
     assert(mse)
     assert(sgd)
     
@@ -57,6 +59,7 @@ defmodule NeurxTest do
       neuron = Neuron.get(pid)
       assert(neuron)
       assert(neuron.activation_fn == nil)
+      assert(neuron.delta_fn == nil)
       assert(neuron.learning_rate == 0.1)
       assert(neuron.optim_fn == sgd)
     end)
@@ -65,6 +68,7 @@ defmodule NeurxTest do
       neuron = Neuron.get(pid)
       assert(neuron)
       assert(neuron.activation_fn == sigmoid)
+      assert(neuron.delta_fn == sigmoid_derv)
       assert(neuron.learning_rate == 0.1)
       assert(neuron.optim_fn == sgd)
     end)
@@ -94,10 +98,12 @@ defmodule NeurxTest do
     input_layer = Layer.get(network.input_layer)
     output_layer = Layer.get(network.output_layer)
 
-    sigmoid = Activators.retreiveFunction("Sigmoid")
-    mse = LossFunctions.retreiveFunction("MSE")
-    sgd = Optimizers.retreiveFunction("SGD")
+    sigmoid = Activators.getFunction("Sigmoid")
+    sigmoid_derv = Activators.getDeltaFunction("Sigmoid")
+    mse = LossFunctions.getFunction("MSE")
+    sgd = Optimizers.getFunction("SGD")
     assert(sigmoid)
+    assert(sigmoid_derv)
     assert(mse)
     assert(sgd)
     
@@ -118,6 +124,7 @@ defmodule NeurxTest do
       neuron = Neuron.get(pid)
       assert(neuron)
       assert(neuron.activation_fn == nil)
+      assert(neuron.delta_fn == nil)
       assert(neuron.learning_rate == 0.1)
       assert(neuron.optim_fn == sgd)
     end)
@@ -126,6 +133,7 @@ defmodule NeurxTest do
       neuron = Neuron.get(pid)
       assert(neuron)
       assert(neuron.activation_fn == sigmoid)
+      assert(neuron.delta_fn == sigmoid_derv)
       assert(neuron.learning_rate == 0.1)
       assert(neuron.optim_fn == sgd)
     end)
@@ -164,10 +172,12 @@ defmodule NeurxTest do
     input_layer = Layer.get(network.input_layer)
     output_layer = Layer.get(network.output_layer)
     
-    sigmoid = Activators.retreiveFunction("Sigmoid")
-    mse = LossFunctions.retreiveFunction("MSE")
-    sgd = Optimizers.retreiveFunction("SGD")
+    sigmoid = Activators.getFunction("Sigmoid")
+    sigmoid_derv = Activators.getDeltaFunction("Sigmoid")
+    mse = LossFunctions.getFunction("MSE")
+    sgd = Optimizers.getFunction("SGD")
     assert(sigmoid)
+    assert(sigmoid_derv)
     assert(mse)
     assert(sgd)
 
@@ -178,6 +188,14 @@ defmodule NeurxTest do
     assert(length(input_layer.neurons) == 4)
     assert(input_layer.activation_fn == nil)
     assert(input_layer.optim_fn == sgd)
+    
+    Enum.each(input_layer.neurons, fn pid ->
+      neuron = Neuron.get(pid)
+      assert(neuron)
+      assert(neuron.activation_fn == nil)
+      assert(neuron.delta_fn == nil)
+      assert(neuron.learning_rate == 0.1)
+    end)
 
     Enum.each(network.hidden_layers, fn lpid ->
       layer = Layer.get(lpid)
@@ -189,6 +207,7 @@ defmodule NeurxTest do
         assert(neuron)
         assert(neuron.learning_rate == 0.1)
         assert(neuron.optim_fn == sgd)
+        assert(neuron.delta_fn == nil)
         if neuron.bias? do
           assert(neuron.activation_fn == nil)
         else
@@ -202,17 +221,11 @@ defmodule NeurxTest do
     assert(output_layer.activation_fn == sigmoid)
     assert(output_layer.optim_fn == sgd)
 
-    Enum.each(input_layer.neurons, fn pid ->
-      neuron = Neuron.get(pid)
-      assert(neuron)
-      assert(neuron.activation_fn == nil)
-      assert(neuron.learning_rate == 0.1)
-    end)
-    
     Enum.each(output_layer.neurons, fn pid ->
       neuron = Neuron.get(pid)
       assert(neuron)
       assert(neuron.activation_fn == sigmoid)
+      assert(neuron.delta_fn == sigmoid_derv)
       assert(neuron.learning_rate == 0.1)
     end)
   end
@@ -260,12 +273,16 @@ defmodule NeurxTest do
     input_layer = Layer.get(network.input_layer)
     output_layer = Layer.get(network.output_layer)
     
-    relu = Activators.retreiveFunction("Relu")
-    sigmoid = Activators.retreiveFunction("Sigmoid")
-    mse = LossFunctions.retreiveFunction("MSE")
-    sgd = Optimizers.retreiveFunction("SGD")
+    relu = Activators.getFunction("Relu")
+    relu_derv = Activators.getDeltaFunction("Relu")
+    sigmoid = Activators.getFunction("Sigmoid")
+    sigmoid_derv = Activators.getDeltaFunction("Sigmoid")
+    mse = LossFunctions.getFunction("MSE")
+    sgd = Optimizers.getFunction("SGD")
     assert(relu)
+    assert(relu_derv)
     assert(sigmoid)
+    assert(sigmoid_derv)
     assert(mse)
     assert(sgd)
 
@@ -276,6 +293,14 @@ defmodule NeurxTest do
     assert(length(input_layer.neurons) == 101)
     assert(input_layer.activation_fn == nil)
     assert(input_layer.optim_fn == sgd)
+    
+    Enum.each(input_layer.neurons, fn pid ->
+      neuron = Neuron.get(pid)
+      assert(neuron)
+      assert(neuron.activation_fn == nil)
+      assert(neuron.delta_fn == nil)
+      assert(neuron.learning_rate == 0.3)
+    end)
 
     hl1 = Enum.at(network.hidden_layers, 0)
     hlayer1 = Layer.get(hl1)
@@ -287,6 +312,7 @@ defmodule NeurxTest do
       assert(neuron)
       assert(neuron.learning_rate == 0.3)
       assert(neuron.optim_fn == sgd)
+      assert(neuron.delta_fn == nil)
       if neuron.bias? do
         assert(neuron.activation_fn == nil)
       else
@@ -304,6 +330,7 @@ defmodule NeurxTest do
       assert(neuron)
       assert(neuron.learning_rate == 0.3)
       assert(neuron.optim_fn == sgd)
+      assert(neuron.delta_fn == nil)
       if neuron.bias? do
         assert(neuron.activation_fn == nil)
       else
@@ -316,17 +343,11 @@ defmodule NeurxTest do
     assert(output_layer.activation_fn == sigmoid)
     assert(output_layer.optim_fn == sgd)
 
-    Enum.each(input_layer.neurons, fn pid ->
-      neuron = Neuron.get(pid)
-      assert(neuron)
-      assert(neuron.activation_fn == nil)
-      assert(neuron.learning_rate == 0.3)
-    end)
-    
     Enum.each(output_layer.neurons, fn pid ->
       neuron = Neuron.get(pid)
       assert(neuron)
       assert(neuron.activation_fn == sigmoid)
+      assert(neuron.delta_fn == sigmoid_derv)
       assert(neuron.learning_rate == 0.3)
     end)
   end
@@ -369,9 +390,9 @@ defmodule NeurxTest do
     input_layer = Layer.get(network.input_layer)
     output_layer = Layer.get(network.output_layer)
     
-    sigmoid = Activators.retreiveFunction("Sigmoid")
-    mse = LossFunctions.retreiveFunction("MSE")
-    sgd = Optimizers.retreiveFunction("SGD")
+    sigmoid = Activators.getFunction("Sigmoid")
+    mse = LossFunctions.getFunction("MSE")
+    sgd = Optimizers.getFunction("SGD")
     assert(sigmoid)
     assert(mse)
     assert(sgd)

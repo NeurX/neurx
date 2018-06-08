@@ -6,10 +6,19 @@ defmodule Neurx.Activators do
   @doc """
   Returns the function given its name as a string.
   """
-  def retreiveFunction(type) do
+  def getFunction(type) do
     case type do
       "Sigmoid" -> fn input -> sigmoid(input) end
       "Relu" -> fn input -> relu(input) end
+      nil -> raise "Invalid Activation Function."
+      _ -> raise "Unknown Activation Function."
+    end
+  end
+
+  def getDeltaFunction(activation_fn_type) do
+    case activation_fn_type do
+      "Sigmoid" -> fn input -> sigmoid_derivative(input) end
+      "Relu" -> fn input -> relu_derivative(input) end
       nil -> raise "Invalid Activation Function."
       _ -> raise "Unknown Activation Function."
     end
@@ -23,10 +32,28 @@ defmodule Neurx.Activators do
   end
 
   @doc """
+  Derivative of the sigmoid function for back propagation.
+  """
+  def sigmoid_derivative(input) do
+    sigmoid(input) * (1 - sigmoid(input))
+  end
+
+  @doc """
   Relu function. See more at: https://en.wikipedia.org/wiki/Rectifier_(neural_networks)
   """
   def relu(input) do
     max(0, input)
+  end
+
+  @doc """
+  Derivative of the relu function for back propagation.
+  """
+  def relu_derivative(input) do
+    if input < 0 do
+      0
+    else
+      1
+    end
   end
 
 end

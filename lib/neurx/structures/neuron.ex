@@ -7,7 +7,7 @@ defmodule Neurx.Neuron do
 
   alias Neurx.{Neuron, Connection}
 
-  defstruct pid: nil, input: 0, output: 0, incoming: [], outgoing: [], bias?: false, delta: 0, activation_fn: nil, learning_rate: nil, optim_fn: nil
+  defstruct pid: nil, input: 0, output: 0, incoming: [], outgoing: [], bias?: false, delta: 0, delta_fn: nil, activation_fn: nil, learning_rate: 0.1, optim_fn: nil
 
   @doc """
   Create a neuron agent
@@ -69,7 +69,7 @@ defmodule Neurx.Neuron do
         %{output: 1}
       else
         input = value || Enum.reduce(neuron.incoming, 0, sumf())
-        %{input: input, output: neuron.activation_fn(input)}
+        %{input: input, output: neuron.activation_fn.(input)}
       end
 
     neuron_pid |> update(fields)
@@ -85,17 +85,13 @@ defmodule Neurx.Neuron do
 
     if !neuron.bias? && !input_neuron?(neuron) do
       if output_neuron?(neuron) do
-        # This is the derivative of the error function
-        # not simply difference in output
-        # http://whiteboard.ping.se/MachineLearning/BackProp
-
-        neuron_pid |> update(%{delta: neuron.output - target_output})
+        neuron_pid |> update(%{delta: neuron.delta_fn.(neuron.output)})
       else
         neuron |> calculate_outgoing_delta
       end
     end
 
-    neuron.pid |> get |> neuron.optim_fn
+    neuron.pid |> get |> neuron.optim_fn.()
   end
 
   defp output_neuron?(neuron) do

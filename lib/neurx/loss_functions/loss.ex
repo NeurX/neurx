@@ -8,7 +8,7 @@ defmodule Neurx.LossFunctions do
   @doc """
   Returns the function given its name as a string.
   """
-  def retreiveFunction(type) do
+  def getFunction(type) do
     case type do
       "MSE" -> fn act_out, tar_out -> mean_squared_error(act_out, tar_out) end
       nil -> raise "Invalid Loss Function."
