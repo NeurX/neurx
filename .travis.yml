@@ -5,3 +5,6 @@ elixir:
 
 script:
     mix coveralls
+
+notifications:
+  email: false
