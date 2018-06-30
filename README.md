@@ -1,3 +1,7 @@
+[![License: LGPL v3](https://img.shields.io/badge/License-LGPL%20v3-blue.svg)](https://www.gnu.org/licenses/lgpl-3.0)
+[![Build Status](https://travis-ci.org/NeurX/neurx.svg?branch=master)](https://travis-ci.org/NeurX/neurx)
+[![Coverage Status](https://coveralls.io/repos/github/NeurX/neurx/badge.svg?branch=master)](https://coveralls.io/github/NeurX/neurx?branch=master)
+
 # Neurx
 
 Neural network library for elixir.
