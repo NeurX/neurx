@@ -56,7 +56,7 @@ defmodule Neurx.MixProject do
         "Jim Galloway",
         "Claudia Li",
       ],
-      licenses: ["MIT"],
+      licenses: ["LGPL"],
       links: %{github: "https://github.com/neurx/neurx_core"},
     ]
   end
