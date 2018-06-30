@@ -1,4 +1,4 @@
-defmodule NeurxCore.MixProject do
+defmodule Neurx.MixProject do
   use Mix.Project
 
   @version "0.0.1"
@@ -6,16 +6,16 @@ defmodule NeurxCore.MixProject do
   def project do
     [
       app: :neurx_core,
-      
+
       version: @version,
       elixir: "~> 1.6",
       deps: deps(),
       package: package(),
-      
+
       build_embedded: Mix.env == :prod,
       start_permanent: Mix.env == :prod,
 
-      name: "neurx_core",
+      name: "neurx",
       docs: [source_ref: "v#{@version}", main: "NeurX"],
       source_url: "https://github.com/neurx/neurx_core",
       description: "
@@ -49,7 +49,7 @@ defmodule NeurxCore.MixProject do
   end
 
   defp package do
-    [ 
+    [
       maintainers: [
         "Jakob Roberts",
         "Joshua Portelance",
