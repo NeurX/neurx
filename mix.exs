@@ -57,7 +57,7 @@ defmodule Neurx.MixProject do
         "Claudia Li",
       ],
       licenses: ["LGPL"],
-      links: %{github: "https://github.com/neurx/neurx_core"},
+      links: %{github: "https://github.com/NeurX/neurx"},
     ]
   end
 end
