@@ -8,7 +8,7 @@ defmodule Neurx.MixProject do
       app: :neurx_core,
 
       version: @version,
-      elixir: "~> 1.6",
+      elixir: "~> 1.4",
       deps: deps(),
       package: package(),
 
