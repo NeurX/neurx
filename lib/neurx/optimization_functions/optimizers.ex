@@ -11,8 +11,8 @@ defmodule Neurx.Optimizers do
   def getFunction(type) do
     case type do
       "SGD" -> fn neuron -> stochastic_gradient_descent(neuron) end
-      nil -> raise "Invalid Optimization Function."
-      _ -> raise "Unknown Optimization Function."
+      nil -> raise "[Neurx.Optimizers] :: Invalid Optimization Function."
+      _ -> raise "[Neurx.Optimizers] :: Unknown Optimization Function."
     end
   end
 
