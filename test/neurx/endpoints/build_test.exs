@@ -369,7 +369,10 @@ defmodule BuildTest do
             suff
           ]
         }
-      ]
+      ],
+      optim_function: %{
+        type: "SGD"
+      }
     })
 
     assert(nn)
@@ -605,6 +608,21 @@ defmodule BuildTest do
     end
   end
   
+  test "Null loss function type." do
+    try do
+      Neurx.build(%{
+        input_layer: 100,
+        output_layer: %{
+          size: 2
+        },
+        loss_function: %{}
+      })
+      assert(false) # should not reach here.
+    rescue
+      RuntimeError -> nil
+    end
+  end
+  
   test "Unknown optimization function." do
     try do
       Neurx.build(%{
@@ -623,7 +641,26 @@ defmodule BuildTest do
     end
   end
   
+  test "Null optimization function type." do
+    try do
+      Neurx.build(%{
+        input_layer: 100,
+        output_layer: %{
+          size: 1
+        },
+        optim_function: %{
+          learning_rate: 0.3
+        }
+      })
+      assert(false) # should not reach here.
+    rescue
+      RuntimeError -> nil
+    end
+  end
+  
   test "Invalid learning rate." do
+
+    # Zero learning rate.
     try do
       Neurx.build(%{
         input_layer: 100,
@@ -639,7 +676,8 @@ defmodule BuildTest do
     rescue
       RuntimeError -> nil
     end
-    
+
+    # None numerical learning rate.
     try do
       Neurx.build(%{
         input_layer: 100,

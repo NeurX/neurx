@@ -77,11 +77,12 @@ defmodule Neurx.Build do
         otype = config[:optim_function][:type]
         if config[:optim_function][:learning_rate] == nil do
           %{type: otype, learning_rate: @default_learning_rate}
-        end
-        if config[:optim_function][:learning_rate] > 0 and config[:optim_function][:learning_rate]/2 do
-          %{type: otype, learning_rate: config[:optim_function][:learning_rate]}
         else
-          raise "[Neurx.Build] :: Invalid learning rate."
+          if config[:optim_function][:learning_rate] > 0 and config[:optim_function][:learning_rate]/2 do
+            %{type: otype, learning_rate: config[:optim_function][:learning_rate]}
+          else
+            raise "[Neurx.Build] :: Invalid learning rate."
+          end
         end
       else
         @default_optim
