@@ -10,8 +10,8 @@ defmodule Neurx.Activators do
     case type do
       "Sigmoid" -> fn input -> sigmoid(input) end
       "Relu" -> fn input -> relu(input) end
-      nil -> raise "Invalid Activation Function."
-      _ -> raise "Unknown Activation Function."
+      nil -> raise "[Neurx.Activators] :: Invalid Activation Function."
+      _ -> raise "[Neurx.Activators] :: Unknown Activation Function."
     end
   end
 
@@ -19,8 +19,8 @@ defmodule Neurx.Activators do
     case activation_fn_type do
       "Sigmoid" -> fn input -> sigmoid_derivative(input) end
       "Relu" -> fn input -> relu_derivative(input) end
-      nil -> raise "Invalid Activation Function."
-      _ -> raise "Unknown Activation Function."
+      nil -> raise "[Neurx.Activators] :: Invalid Delta Function."
+      _ -> raise "[Neurx.Activators] :: Unknown Delta Function."
     end
   end
 

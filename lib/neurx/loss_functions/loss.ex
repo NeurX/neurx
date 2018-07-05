@@ -3,7 +3,7 @@ defmodule Neurx.LossFunctions do
   Contains all of the loss functions.
   """
   
-  alias Neurx.{Neuron, Layer}
+  alias Neurx.{Neuron}
   
   @doc """
   Returns the function given its name as a string.
@@ -11,8 +11,8 @@ defmodule Neurx.LossFunctions do
   def getFunction(type) do
     case type do
       "MSE" -> fn act_out, tar_out -> mean_squared_error(act_out, tar_out) end
-      nil -> raise "Invalid Loss Function."
-      _ -> raise "Unknown Loss Function."
+      nil -> raise "[Neurx.LossFunctions] :: Invalid Loss Function."
+      _ -> raise "[Neurx.LossFunctions] :: Unknown Loss Function."
     end
   end
 
