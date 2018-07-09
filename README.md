@@ -4,8 +4,6 @@
 
 # Neurx
 
-[![Build Status](https://travis-ci.org/NeurX/neurx.svg?branch=master)](https://travis-ci.org/NeurX/neurx)
-
 Neural network library for elixir.
 
 ### Testing
