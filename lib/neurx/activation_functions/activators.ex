@@ -28,14 +28,19 @@ defmodule Neurx.Activators do
   Sigmoid function. See more at: https://en.wikipedia.org/wiki/Sigmoid_function
   """
   def sigmoid(input) do
-    1 / (1 + :math.exp(-input))
+    if -input > 705 do
+      1 / (1 + :math.exp(705))
+    else
+      1 / (1 + :math.exp(-input))
+    end
   end
 
   @doc """
   Derivative of the sigmoid function for back propagation.
   """
   def sigmoid_derivative(input) do
-    sigmoid(input) * (1 - sigmoid(input))
+    sig = sigmoid(input)
+    sig * (1 - sig)
   end
 
   @doc """

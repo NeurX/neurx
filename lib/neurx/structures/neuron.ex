@@ -69,7 +69,11 @@ defmodule Neurx.Neuron do
         %{output: 1}
       else
         input = value || Enum.reduce(neuron.incoming, 0, sumf())
-        %{input: input, output: neuron.activation_fn.(input)}
+        if input_neuron?(neuron) do
+          %{input: input, output: input} 
+        else
+          %{input: input, output: neuron.activation_fn.(input)}
+        end
       end
 
     neuron_pid |> update(fields)
@@ -85,7 +89,8 @@ defmodule Neurx.Neuron do
 
     if !neuron.bias? && !input_neuron?(neuron) do
       if output_neuron?(neuron) do
-        neuron_pid |> update(%{delta: neuron.delta_fn.(neuron.output)})
+        error = (neuron.output - target_output) 
+        neuron_pid |> update(%{delta: error * neuron.delta_fn.(neuron.output)})
       else
         neuron |> calculate_outgoing_delta
       end

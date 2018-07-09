@@ -3,7 +3,7 @@ defmodule Neurx do
   Documentation for Neurx.
   """
 
-  alias Neurx.{Build}
+  alias Neurx.{Build, Train}
 
   @doc """
   Builds the network.
@@ -20,7 +20,20 @@ defmodule Neurx do
   @doc """
   Trains the network on given data.
   """
-  def train() do
+  def train(network_pid, training_data, options \\ %{}) do
+    pid =
+      case {network_pid, training_data} do
+        {nil, nil} ->
+          raise "[Neurx] :: Invalid network PID and training data."
+        {_, nil} ->
+          raise "[Neurx] :: Invalid training data."
+        {nil, _} ->
+          raise "[Neurx] :: Invalid network PID."
+        _ ->
+          {:ok, pid} = Train.train(network_pid, training_data, options)
+          pid
+      end
+    pid
   end
   
   @doc """

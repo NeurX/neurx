@@ -17,7 +17,7 @@ defmodule Neurx.MixProject do
 
       name: "neurx",
       docs: [source_ref: "v#{@version}", main: "NeurX"],
-      source_url: "https://github.com/neurx/neurx_core",
+      source_url: "https://github.com/NeurX/neurx",
       description: "
         NN library for Elixir
       ",
