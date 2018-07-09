@@ -8,8 +8,37 @@ defmodule TrainTest do
   ###############################################
   # Build Endpoint Tests
   ###############################################
+
+  test "Nil PID and Data" do
+    try do
+      Neurx.train(nil, nil, nil)
+      assert(false) # should not reach here.
+    rescue
+      RuntimeError -> nil
+    end
+  end
   
-  test "Iris Flower Training" do
+  test "PID with Nil Data" do
+    try do
+      # Don't need to actual pass a PID.
+      Neurx.train(12345, nil, nil)
+      assert(false) # should not reach here.
+    rescue
+      RuntimeError -> nil
+    end
+  end
+  
+  test "Data with Nil PID" do
+    try do
+      # Don't need to actual pass a PID.
+      Neurx.train(nil, %{}, nil)
+      assert(false) # should not reach here.
+    rescue
+      RuntimeError -> nil
+    end
+  end
+
+  test "Testing Network Training" do
     # Building the network.
     nn = Neurx.build(%{
       input_layer: 3,
@@ -64,7 +93,7 @@ defmodule TrainTest do
       assert(neuron.learning_rate == 0.1)
     end)
 
-    # Training on Iris Flower Data.
+    # Training on simple dataset.
     data = TestData.get_simple_training_data()
     options = %{
       epochs: 1000,
