@@ -42,7 +42,6 @@ defmodule Neurx.Train do
 
     num_training_samples = length(training_data)
 
-    IO.puts "\n"
     for epoch <- 0..epochs do
       average_error =
         Enum.reduce(training_data, 0, fn sample, sum ->
