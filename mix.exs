@@ -8,7 +8,7 @@ defmodule Neurx.MixProject do
       app: :neurx_core,
 
       version: @version,
-      elixir: "~> 1.5",
+      elixir: "~> 1.6",
       deps: deps(),
       package: package(),
 
@@ -17,7 +17,7 @@ defmodule Neurx.MixProject do
 
       name: "neurx",
       docs: [source_ref: "v#{@version}", main: "NeurX"],
-      source_url: "https://github.com/neurx/neurx_core",
+      source_url: "https://github.com/NeurX/neurx",
       description: "
         NN library for Elixir
       ",

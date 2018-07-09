@@ -1,6 +1,6 @@
 defmodule Neurx.Build do
   @moduledoc """
-  Documentation for Neurx.
+  Documentation for Build.
   """
 
   alias Neurx.{Network}

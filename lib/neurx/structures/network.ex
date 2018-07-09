@@ -119,7 +119,7 @@ defmodule Neurx.Network do
   def train(network, target_outputs) do
     network.output_layer |> Layer.get() |> Layer.train(target_outputs)
     actual_outputs = (Layer.get(network.output_layer)).neurons
-    network.pid |> update(%{error: network.loss_function(actual_outputs, target_outputs)})
+    network.pid |> update(%{error: network.loss_fn.(actual_outputs, target_outputs)})
 
     network.hidden_layers
     |> Enum.reverse()
