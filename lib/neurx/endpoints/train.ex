@@ -41,6 +41,7 @@ defmodule Neurx.Train do
       end
 
     num_training_samples = length(training_data)
+    IO.puts "\n"
 
     for epoch <- 0..epochs do
       average_error =
