@@ -6,7 +6,7 @@ defmodule TrainTest do
   alias Neurx.{Network, Layer, Neuron, Activators, LossFunctions, Optimizers}
   
   ###############################################
-  # Build Endpoint Tests
+  # Train Endpoint Tests
   ###############################################
 
   test "Nil PID and Data" do
@@ -106,7 +106,7 @@ defmodule TrainTest do
     data = TestData.get_simple_training_data()
     options = %{
       epochs: 1000,
-      log_freq: 100
+      log_freq: 0
     }
     tnn = Neurx.train(nn, data, options)
 
@@ -200,7 +200,7 @@ defmodule TrainTest do
     data = TestData.get_simple_training_data()
     options = %{
       epochs: 1000,
-      log_freq: 100
+      log_freq: 0
     }
     tnn = Neurx.train(nn, data, options)
 
