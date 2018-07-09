@@ -3,15 +3,12 @@ defmodule Neurx.Network do
   Contains layers which makes up a matrix of neurons.
   """
 
-  alias Neurx.{Neuron, Layer, Network, Activators, LossFunctions, Optimizers}
+  alias Neurx.{Layer, Network, Activators, LossFunctions, Optimizers}
 
   defstruct pid: nil, input_layer: nil, hidden_layers: [], output_layer: nil, error: 0, loss_fn: nil, optim_fn: nil
 
   @doc """
-  Pass in layer sizes which will generate the layers for the network.
-  The first number represents the number of neurons in the input layer.
-  The last number represents the number of neurons in the output layer.
-  [Optionally] The middle numbers represent the number of neurons for hidden layers.
+  Takes in the network configuration as a map and creats the specified network.
   """
   def start_link(config) do
     {:ok, pid} = Agent.start_link(fn -> %Network{} end)
@@ -122,7 +119,7 @@ defmodule Neurx.Network do
   def train(network, target_outputs) do
     network.output_layer |> Layer.get() |> Layer.train(target_outputs)
     actual_outputs = (Layer.get(network.output_layer)).neurons
-    network.pid |> update(%{error: network.loss_function(actual_outputs, target_outputs)})
+    network.pid |> update(%{error: network.loss_fn.(actual_outputs, target_outputs)})
 
     network.hidden_layers
     |> Enum.reverse()

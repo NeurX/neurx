@@ -41,6 +41,12 @@ defmodule Neurx.ActivatorsTest do
   test "Testing Sigmoid function." do
     assert(Activators.sigmoid(1) == 0.7310585786300049)
   end
+  
+  test "Testing Sigmoid function overflow." do
+    # If overflow is not caught Elixir will crash since
+    # e^720 is larger then the max float.
+    assert(Activators.sigmoid(-720) == 6.643397797997951e-307)
+  end
 
   test "Testing Relu function." do
     assert(Activators.relu(1) == 1)

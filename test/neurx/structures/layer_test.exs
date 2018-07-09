@@ -80,7 +80,7 @@ defmodule Neurx.LayerTest do
     Layer.activate(pid)
 
     for neuron <- Layer.get(pid).neurons do
-      assert Neuron.get(neuron).output == 0.5
+      assert Neuron.get(neuron).output == 0
     end
   end
 
@@ -93,7 +93,7 @@ defmodule Neurx.LayerTest do
 
     for neuron_pid <- Layer.get(pid).neurons do
       neuron = Neuron.get(neuron_pid)
-      assert neuron.output >= 0.5 && neuron.output <= 1.0
+      assert neuron.output == 1 || neuron.output == 2
     end
   end
 end

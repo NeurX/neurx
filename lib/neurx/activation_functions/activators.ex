@@ -10,8 +10,8 @@ defmodule Neurx.Activators do
     case type do
       "Sigmoid" -> fn input -> sigmoid(input) end
       "Relu" -> fn input -> relu(input) end
-      nil -> raise "Invalid Activation Function."
-      _ -> raise "Unknown Activation Function."
+      nil -> raise "[Neurx.Activators] :: Invalid Activation Function."
+      _ -> raise "[Neurx.Activators] :: Unknown Activation Function."
     end
   end
 
@@ -19,8 +19,8 @@ defmodule Neurx.Activators do
     case activation_fn_type do
       "Sigmoid" -> fn input -> sigmoid_derivative(input) end
       "Relu" -> fn input -> relu_derivative(input) end
-      nil -> raise "Invalid Activation Function."
-      _ -> raise "Unknown Activation Function."
+      nil -> raise "[Neurx.Activators] :: Invalid Delta Function."
+      _ -> raise "[Neurx.Activators] :: Unknown Delta Function."
     end
   end
 
@@ -28,14 +28,19 @@ defmodule Neurx.Activators do
   Sigmoid function. See more at: https://en.wikipedia.org/wiki/Sigmoid_function
   """
   def sigmoid(input) do
-    1 / (1 + :math.exp(-input))
+    if -input > 705 do
+      1 / (1 + :math.exp(705))
+    else
+      1 / (1 + :math.exp(-input))
+    end
   end
 
   @doc """
   Derivative of the sigmoid function for back propagation.
   """
   def sigmoid_derivative(input) do
-    sigmoid(input) * (1 - sigmoid(input))
+    sig = sigmoid(input)
+    sig * (1 - sig)
   end
 
   @doc """
