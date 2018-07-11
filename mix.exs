@@ -5,7 +5,7 @@ defmodule Neurx.MixProject do
 
   def project do
     [
-      app: :neurx_core,
+      app: :neurx,
 
       version: @version,
       elixir: "~> 1.6",
