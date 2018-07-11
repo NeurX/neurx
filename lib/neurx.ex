@@ -7,6 +7,8 @@ defmodule Neurx do
 
   @doc """
   Builds the network.
+
+  Returns PID of network built.
   """
   def build(config) do
     if config == %{} or config == nil do
@@ -16,9 +18,11 @@ defmodule Neurx do
     {:ok, pid} = Build.build(config)
     pid
   end
-  
+
   @doc """
   Trains the network on given data.
+
+  Returns PID of network trained
   """
   def train(network_pid, training_data, options \\ %{}) do
     pid =
@@ -35,10 +39,22 @@ defmodule Neurx do
       end
     pid
   end
-  
+
   @doc """
   Evaluate the given data using the network.
   """
   def evaluate() do
+  end
+
+  @doc """
+  Export a built network.
+  """
+  def export() do
+  end
+
+  @doc """
+  Import a built network file.
+  """
+  def import() do
   end
 end
