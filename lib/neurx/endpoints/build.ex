@@ -34,7 +34,7 @@ defmodule Neurx.Build do
       end
 
     # Sanitize hidden layer configs.
-    hidden_layers = 
+    hidden_layers =
       if config[:hidden_layers] != nil do
         Enum.map(config[:hidden_layers], fn hl ->
           size = hl[:size]
@@ -45,14 +45,14 @@ defmodule Neurx.Build do
             activation = sanitize_activation_functions(hl[:activation])
             prefuncs = sanitize_function_list(hl[:prefix_functions])
             suffuncs = sanitize_function_list(hl[:suffix_functions])
-            %{size: size, activation: activation, prefix_functions: prefuncs, 
+            %{size: size, activation: activation, prefix_functions: prefuncs,
               suffix_functions: suffuncs}
             end
           end)
       end
 
     # Sanitize loss function config.
-    loss = 
+    loss =
       if config[:loss_function] != nil do
         if config[:loss_function][:type] == nil do
           raise "[Neurx.Build] :: Loss type cannot be null."
