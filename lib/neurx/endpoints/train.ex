@@ -57,7 +57,7 @@ defmodule Neurx.Train do
       end
     end
 
-    {:ok, network_pid}
+    {:ok, network_pid, Network.get(network_pid).error}
   end
 
   defp unexponential(average_error) do

@@ -98,14 +98,11 @@ defmodule EvaluateTest do
       epochs: 1000,
       log_freq: 100
     }
-    tnn = Neurx.train(nn, training_data, options)
+    {tnn, final_error} = Neurx.train(nn, training_data, options)
 
     assert(tnn)
-
-    network = Network.get(tnn)
-    assert(network)
-
-    assert(network.error < 0.01)
+    assert(final_error)
+    assert(final_error < 0.01)
 
     # Evaluating on simple dataset.
     testing_data = TestData.get_simple_test_data()
@@ -208,14 +205,11 @@ defmodule EvaluateTest do
       epochs: 1000,
       log_freq: 100
     }
-    tnn = Neurx.train(nn, training_data, options)
+    {tnn, final_error} = Neurx.train(nn, training_data, options)
 
     assert(tnn)
-
-    network = Network.get(tnn)
-    assert(network)
-
-    assert(network.error < 0.01)
+    assert(final_error)
+    assert(final_error < 0.01)
     
     # Evaluating on simple dataset.
     testing_data = TestData.get_simple_test_data()

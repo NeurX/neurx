@@ -26,8 +26,8 @@ defmodule Neurx do
   """
   def train(network_pid, training_data, options \\ %{}) do
     {:ok} = verify_pid_data_tuple(network_pid, training_data)
-    {:ok, pid} = Train.train(network_pid, training_data, options)
-    pid
+    {:ok, pid, final_error} = Train.train(network_pid, training_data, options)
+    {pid, final_error}
   end
 
   @doc """
