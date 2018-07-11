@@ -3,7 +3,7 @@ defmodule Neurx do
   Documentation for Neurx.
   """
 
-  alias Neurx.{Build, Train}
+  alias Neurx.{Build, Train, Evaluate}
 
   @doc """
   Builds the network.
@@ -25,25 +25,33 @@ defmodule Neurx do
   Returns PID of network trained
   """
   def train(network_pid, training_data, options \\ %{}) do
-    pid =
-      case {network_pid, training_data} do
-        {nil, nil} ->
-          raise "[Neurx] :: Invalid network PID and training data."
-        {_, nil} ->
-          raise "[Neurx] :: Invalid training data."
-        {nil, _} ->
-          raise "[Neurx] :: Invalid network PID."
-        _ ->
-          {:ok, pid} = Train.train(network_pid, training_data, options)
-          pid
-      end
+    {:ok} = verify_pid_data_tuple(network_pid, training_data)
+    {:ok, pid} = Train.train(network_pid, training_data, options)
     pid
   end
 
   @doc """
   Evaluate the given data using the network.
   """
-  def evaluate() do
+  def evaluate(network_pid, data) do
+    {:ok} = verify_pid_data_tuple(network_pid, data)
+    {:ok, pid, outputs} = Evaluate.evaluate(network_pid, data)
+    {pid, outputs}
+  end
+
+  defp verify_pid_data_tuple(pid, data) do
+    status = 
+      case {pid, data} do
+        {nil, nil} ->
+          raise "[Neurx] :: Invalid network PID and data."
+        {_, nil} ->
+          raise "[Neurx] :: Invalid data."
+        {nil, _} ->
+          raise "[Neurx] :: Invalid network PID."
+        _ ->
+          {:ok}
+      end
+    status
   end
 
   @doc """
