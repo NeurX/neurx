@@ -1,17 +1,17 @@
-defmodule TrainTest do
+defmodule EvaluateTest do
   use ExUnit.Case
-  doctest Neurx.Train
+  doctest Neurx.Evaluate
 
   Code.require_file("test/test_data.exs")
   alias Neurx.{Network, Layer, Neuron, Activators, LossFunctions, Optimizers}
   
   ###############################################
-  # Train Endpoint Tests
+  # Evaluate Endpoint Tests
   ###############################################
 
   test "Nil PID and Data" do
     try do
-      Neurx.train(nil, nil, nil)
+      Neurx.evaluate(nil, nil)
       assert(false) # should not reach here.
     rescue
       RuntimeError -> nil
@@ -21,7 +21,7 @@ defmodule TrainTest do
   test "PID with Nil Data" do
     try do
       # Don't need to actual pass a PID.
-      Neurx.train(12345, nil, nil)
+      Neurx.evaluate(12345, nil)
       assert(false) # should not reach here.
     rescue
       RuntimeError -> nil
@@ -30,24 +30,14 @@ defmodule TrainTest do
   
   test "Data with Nil PID" do
     try do
-      Neurx.train(nil, %{}, nil)
+      Neurx.evaluate(nil, %{})
       assert(false) # should not reach here.
     rescue
       RuntimeError -> nil
     end
   end
   
-  test "Nil options" do
-    try do
-      # This will fail because the PID is invalid, only need to test options.
-      Neurx.train(1234, %{}, nil)
-      assert(false) # should not reach here.
-    rescue
-      ArgumentError -> nil
-    end
-  end
-
-  test "Testing network training with no hidden layers" do
+  test "Testing and Evaluating network training with no hidden layers" do
     # Building the network.
     nn = Neurx.build(%{
       input_layer: 3,
@@ -103,19 +93,35 @@ defmodule TrainTest do
     end)
 
     # Training on simple dataset.
-    data = TestData.get_simple_training_data()
+    training_data = TestData.get_simple_training_data()
     options = %{
       epochs: 1000,
       log_freq: 100
     }
-    {tnn, final_error} = Neurx.train(nn, data, options)
+    {tnn, final_error} = Neurx.train(nn, training_data, options)
 
     assert(tnn)
     assert(final_error)
     assert(final_error < 0.01)
+
+    # Evaluating on simple dataset.
+    testing_data = TestData.get_simple_test_data()
+    {enn, outputs} = Neurx.evaluate(nn, testing_data)
+    
+    assert(enn)
+    assert(outputs)
+
+    # We only provided one testing sample.
+    assert(length(outputs) == 1)
+
+    # The testing sample only has one output.
+    assert(length(Enum.at(outputs, 0)) == 1)
+
+    # Network should evaluate close to 1.
+    assert(Enum.at(Enum.at(outputs, 0), 0) > 0.95)
   end
-  
-  test "Testing network training with one hidden layers" do
+
+  test "Testing and Evaluating network training with one hidden layers" do
     # Building the network.
     nn = Neurx.build(%{
       input_layer: 3,
@@ -194,15 +200,31 @@ defmodule TrainTest do
     end)
 
     # Training on simple dataset.
-    data = TestData.get_simple_training_data()
+    training_data = TestData.get_simple_training_data()
     options = %{
       epochs: 1000,
       log_freq: 100
     }
-    {tnn, final_error} = Neurx.train(nn, data, options)
+    {tnn, final_error} = Neurx.train(nn, training_data, options)
 
     assert(tnn)
     assert(final_error)
     assert(final_error < 0.01)
+    
+    # Evaluating on simple dataset.
+    testing_data = TestData.get_simple_test_data()
+    {enn, outputs} = Neurx.evaluate(nn, testing_data)
+    
+    assert(enn)
+    assert(outputs)
+
+    # We only provided one testing sample.
+    assert(length(outputs) == 1)
+
+    # The testing sample only has one output.
+    assert(length(Enum.at(outputs, 0)) == 1)
+
+    # Network should evaluate close to 1.
+    assert(Enum.at(Enum.at(outputs, 0), 0) > 0.95)
   end
 end
