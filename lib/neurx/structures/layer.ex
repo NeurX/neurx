@@ -1,5 +1,6 @@
 defmodule Neurx.Layer do
   use GenServer
+
   @moduledoc """
   List of neurons. The are used to apply behaviors on sets of neurons.
   A network is made up layers (which are made up of neurons).
@@ -10,7 +11,6 @@ defmodule Neurx.Layer do
   defstruct pid: nil, neurons: [], activation_fn: nil, learning_rate: nil, optim_fn: nil
 
   def start_link(layer_fields \\ %{}) do
-
     {:ok, pid} = GenServer.start_link(__MODULE__, %Layer{})
 
     neurons = create_neurons(Map.get(layer_fields, :neuron_size), layer_fields)
@@ -27,6 +27,7 @@ defmodule Neurx.Layer do
   def get(pid) do
     GenServer.call(pid, {:get})
   end
+
   @doc """
   Update a layer by passing in a pid and a map of fields to update.
   """
@@ -101,7 +102,10 @@ defmodule Neurx.Layer do
       neuron |> Neuron.activate(Enum.at(values, index))
     end)
   end
-  ## Server Callbacks for GenServer
+
+  @doc """
+  Server Callbacks for GenServer
+  """
   def init(layer) do
     {:ok, layer}
   end

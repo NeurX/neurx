@@ -1,5 +1,6 @@
 defmodule Neurx.Network do
   use GenServer
+
   @moduledoc """
   Contains layers which makes up a matrix of neurons.
   """
@@ -12,7 +13,6 @@ defmodule Neurx.Network do
   Takes in the network configuration as a map and creats the specified network.
   """
   def start_link(config) do
-  #  {:ok, pid} = Agent.start_link(fn -> %Network{} end)
     {:ok, pid} = GenServer.start_link(__MODULE__, %Network{})
     learning_rate = Map.get(Map.get(config, :optimization_function), :learning_rate)
     optimization_fn = Optimizers.getFunction(Map.get(Map.get(config, :optimization_function), :type))
@@ -38,6 +38,7 @@ defmodule Neurx.Network do
   def get(pid) do
     GenServer.call(pid, {:get})
   end
+
   @doc """
   Update the network layers.
   """
@@ -139,8 +140,9 @@ defmodule Neurx.Network do
       hidden_layers: hidden_layers
     }
   end
-
-  ## Server Callbacks for GenServer
+  @doc """
+  Server Callbacks for GenServer
+  """
   def init(network) do
     {:ok, network}
   end

@@ -1,4 +1,6 @@
 defmodule Neurx.Neuron do
+  use GenServer
+
   @moduledoc """
   A neuron makes up a network. It's purpose is to sum its inputs
   and compute an output. During training the neurons adjust weights
@@ -22,7 +24,7 @@ defmodule Neurx.Neuron do
   end
 
   @doc """
-  ## Pass in the pid, and a map to update values of a neuron
+  Pass in the pid, and a map to update values of a neuron
   """
   def update(pid, neuron_fields) do
     GenServer.cast(pid,{:update, neuron_fields})
@@ -116,7 +118,10 @@ defmodule Neurx.Neuron do
 
     neuron.pid |> update(%{delta: delta})
   end
-  ## Server Callbacks for GenServer
+
+  @doc """
+  Server Callbacks for GenServer
+  """
   def init(neuron) do
     {:ok, neuron}
   end

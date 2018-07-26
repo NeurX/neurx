@@ -1,9 +1,12 @@
 defmodule Neurx.Connection do
+  use GenServer
+
   @moduledoc """
   Neurons communciate via connections.
   Connection weights determine the network output and are updated while training occurs.
   Network capability is represented in the network matrix of weight values.
   """
+  
   alias Neurx.{Connection}
 
   # make weight random at some point
@@ -35,8 +38,10 @@ defmodule Neurx.Connection do
 
     {:ok, pid}
   end
-  
-  ## Server Callbacks for GenServer
+
+  @doc """
+  Server Callbacks for GenServer
+  """
   def init(connection) do
     {:ok, connection}
   end
