@@ -1,4 +1,6 @@
 defmodule Neurx.Network do
+  use GenServer
+
   @moduledoc """
   Contains layers which makes up a matrix of neurons.
   """
@@ -11,8 +13,7 @@ defmodule Neurx.Network do
   Takes in the network configuration as a map and creats the specified network.
   """
   def start_link(config) do
-    {:ok, pid} = Agent.start_link(fn -> %Network{} end)
-
+    {:ok, pid} = GenServer.start_link(__MODULE__, %Network{})
     learning_rate = Map.get(Map.get(config, :optimization_function), :learning_rate)
     optimization_fn = Optimizers.getFunction(Map.get(Map.get(config, :optimization_function), :type))
     layers =
@@ -34,7 +35,9 @@ defmodule Neurx.Network do
   @doc """
   Return the network by pid.
   """
-  def get(pid), do: Agent.get(pid, & &1)
+  def get(pid) do
+    GenServer.call(pid, {:get})
+  end
 
   @doc """
   Update the network layers.
@@ -42,7 +45,7 @@ defmodule Neurx.Network do
   def update(pid, fields) do
     # preserve the pid!!
     fields = Map.merge(fields, %{pid: pid})
-    Agent.update(pid, &Map.merge(&1, fields))
+    GenServer.cast(pid, {:update, fields})
   end
 
   defp input_neurons(size, learning_rate, optim_fn) do
@@ -76,7 +79,7 @@ defmodule Neurx.Network do
 
   defp connect_layers(pid) do
     layers = pid |> Network.get() |> flatten_layers
-    
+
     layers
     |> Stream.with_index()
     |> Enum.each(fn tuple ->
@@ -136,5 +139,27 @@ defmodule Neurx.Network do
       output_layer: output_layer,
       hidden_layers: hidden_layers
     }
+  end
+
+  @doc """
+  Server Callbacks for GenServer - init
+  """
+  def init(network) do
+    {:ok, network}
+  end
+
+  @doc """
+  Server Callback for GenServer - call
+  """
+  def handle_call({:get}, _from, network) do
+    {:reply, network, network}
+  end
+
+  @doc """
+  Server Callback for GenServer - cast
+  """
+  def handle_cast({:update, fields}, network) do
+    updated_network = Map.merge(network, fields)
+    {:noreply, updated_network}
   end
 end
