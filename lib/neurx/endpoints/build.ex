@@ -3,7 +3,6 @@ defmodule Neurx.Build do
   Documentation for Build.
   """
 
-
   alias Neurx.{Network}
 
   @loss_types ["MSE"]
