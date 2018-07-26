@@ -102,10 +102,16 @@ defmodule Neurx.Build do
 
   defp sanitize_activation_functions(activ) do
     if activ != nil do
-      if activ[:type] not in @activation_types do
-        raise "[Neurx.Build] :: Invalid activation function."
+      if activ[:type] do
+        if activ[:type] not in @activation_types do
+          raise "[Neurx.Build] :: Invalid activation function."
+        else
+           activ[:type]
+        end
       else
-         activ[:type]
+        if activ[:func] do
+          activ[:func]
+        end
       end
     else
       @default_activation
