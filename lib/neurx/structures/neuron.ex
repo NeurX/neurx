@@ -120,16 +120,22 @@ defmodule Neurx.Neuron do
   end
 
   @doc """
-  Server Callbacks for GenServer
+  Server Callback for GenServer - init
   """
   def init(neuron) do
     {:ok, neuron}
   end
 
+  @doc """
+  Server Callback for GenServer - call
+  """
   def handle_call({:get}, _from, neuron) do
     {:reply, neuron, neuron}
   end
 
+  @doc """
+  Server Callback for GenServer - cast
+  """
   def handle_cast({:update, fields}, neuron) do
     updated_neuron = Map.merge(neuron, fields)
     {:noreply, updated_neuron}

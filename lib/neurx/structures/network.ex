@@ -140,17 +140,24 @@ defmodule Neurx.Network do
       hidden_layers: hidden_layers
     }
   end
+
   @doc """
-  Server Callbacks for GenServer
+  Server Callbacks for GenServer - init
   """
   def init(network) do
     {:ok, network}
   end
 
+  @doc """
+  Server Callback for GenServer - call
+  """
   def handle_call({:get}, _from, network) do
     {:reply, network, network}
   end
 
+  @doc """
+  Server Callback for GenServer - cast
+  """
   def handle_cast({:update, fields}, network) do
     updated_network = Map.merge(network, fields)
     {:noreply, updated_network}

@@ -10,6 +10,9 @@ defmodule Neurx.Layer do
 
   defstruct pid: nil, neurons: [], activation_fn: nil, learning_rate: nil, optim_fn: nil
 
+  @doc """
+  Creates a layer.
+  """
   def start_link(layer_fields \\ %{}) do
     {:ok, pid} = GenServer.start_link(__MODULE__, %Layer{})
 
@@ -32,7 +35,6 @@ defmodule Neurx.Layer do
   Update a layer by passing in a pid and a map of fields to update.
   """
   def update(pid, fields) do
-    # why dont preserve pid
     GenServer.cast(pid, {:update, fields})
   end
 
@@ -104,16 +106,22 @@ defmodule Neurx.Layer do
   end
 
   @doc """
-  Server Callbacks for GenServer
+  Server Callback for GenServer - init
   """
   def init(layer) do
     {:ok, layer}
   end
 
+  @doc """
+  Server Callback for GenServer - call
+  """
   def handle_call({:get}, _from, layer) do
     {:reply, layer, layer}
   end
 
+  @doc """
+  Server Callback for GenServer - cast
+  """
   def handle_cast({:update, fields}, layer) do
     updated_layer = Map.merge(layer, fields)
     {:noreply, updated_layer}
