@@ -3,6 +3,7 @@ defmodule Neurx.Build do
   Documentation for Build.
   """
 
+
   alias Neurx.{Network}
 
   @loss_types ["MSE"]
@@ -17,6 +18,50 @@ defmodule Neurx.Build do
 
   @doc """
   Builds the network.
+
+  How to use Build:
+  ### Example containing possible inputs
+      activation1 = fn(x) -> x * 2 end
+      activation2 = fn(x) -> x * x end
+      pre1 = fn(x) -> x * 4 end
+      pre2 = fn(x) -> x - 5 end
+      suf1 = fn(x) -> x + 1 end
+
+      nn = Neurx.build(%{
+        input_layer: 3,
+        output_layer: %{
+          size: 2,
+          activation: %{
+            type: "Sigmoid"
+          }
+        },
+        hidden_layers: [
+          %{
+            size: 5
+          },
+          %{
+            size: 3,
+            activation: %{
+              type: "Sigmoid"
+            }
+          },
+          %{
+            size: 4,
+            activation: %{
+              func: activation1
+            }
+          }
+          ,
+          %{
+            size: 7,
+            activation: %{
+              func: activation2,
+              prefix_functions: [pre1, pre2],
+              suffix_functions: [suf1]
+            }
+          }
+        ]
+      })
   """
   def build(config) do
     if config[:input_layer] <= 0 do
