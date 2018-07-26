@@ -54,10 +54,15 @@ defmodule Neurx.Build do
           %{
             size: 7,
             activation: %{
-              func: activation2,
-              prefix_functions: [pre1, pre2],
-              suffix_functions: [suf1]
-            }
+              func: activation2
+            },
+            prefix_functions: [
+              pre1,
+              pre2
+            ],
+            suffix_functions: [
+              suf1
+            ]
           }
         ],
         loss_function: %{
@@ -152,33 +157,20 @@ defmodule Neurx.Build do
   end
 
   defp sanitize_activation_functions(activ) do
-    if activ != nil do
-      if activ[:type] do
-        if activ[:type] not in @activation_types do
-          raise "[Neurx.Build] :: Invalid activation function."
-        else
-           activ[:type]
-        end
-      else
-        if activ[:func] do
-          activ[:func]
-        end
-      end
-    else
-      @default_activation
+    cond do
+      activ == nil -> @default_activation
+      activ[:type] && activ[:type] not in @activation_types ->
+        raise "[Neurx.Build] :: Invalid activation function."
+      activ[:type] -> activ[:type]
+      activ[:func] -> activ[:func]
+      true -> @default_activation
     end
   end
 
   defp sanitize_function_list(funcs) do
-    if funcs != nil do
-      funcs |>
-      Enum.map(fn f ->
-        if f != nil do
-          f
-        end
-      end)
-    else
-      []
+    cond do
+      funcs == nil -> []
+      true -> funcs |> Enum.map(fn(f) -> if f != nil, do: f end)
     end
   end
 end
