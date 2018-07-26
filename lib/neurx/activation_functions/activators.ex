@@ -7,20 +7,22 @@ defmodule Neurx.Activators do
   Returns the function given its name as a string.
   """
   def getFunction(type) do
-    case type do
-      "Sigmoid" -> fn input -> sigmoid(input) end
-      "Relu" -> fn input -> relu(input) end
-      nil -> raise "[Neurx.Activators] :: Invalid Activation Function."
-      _ -> raise "[Neurx.Activators] :: Unknown Activation Function."
+    cond do
+      type == "Sigmoid" -> fn input -> sigmoid(input) end
+      type == "Relu" -> fn input -> relu(input) end
+      !String.valid?(type) and type[:custom] != nil -> Enum.at(type[:custom], 0)
+      type == nil -> raise "[Neurx.Activators] :: Invalid Activation Function."
+      true -> raise "[Neurx.Activators] :: Unknown Activation Function."
     end
   end
 
-  def getDeltaFunction(activation_fn_type) do
-    case activation_fn_type do
-      "Sigmoid" -> fn input -> sigmoid_derivative(input) end
-      "Relu" -> fn input -> relu_derivative(input) end
-      nil -> raise "[Neurx.Activators] :: Invalid Delta Function."
-      _ -> raise "[Neurx.Activators] :: Unknown Delta Function."
+  def getDeltaFunction(type) do
+    cond do
+      type == "Sigmoid" -> fn input -> sigmoid_derivative(input) end
+      type == "Relu" -> fn input -> relu_derivative(input) end
+      !String.valid?(type) and type[:custom] != nil -> Enum.at(type[:custom], 1)
+      type == nil -> raise "[Neurx.Activators] :: Invalid Delta Function."
+      true -> raise "[Neurx.Activators] :: Unknown Delta Function."
     end
   end
 

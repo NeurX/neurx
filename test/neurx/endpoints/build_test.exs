@@ -348,98 +348,102 @@ defmodule BuildTest do
     end)
   end
 
-  # test "Create network with hidden layer with custom activation function." do
-  #   activ1 = fn(n) ->
-  #     if -n > 705 do
-  #       1 / (1 + :math.exp(705))
-  #     else
-  #       1 / (1 + :math.exp(-n))
-  #     end
-  #   end
-  #   nn = Neurx.build(%{
-  #     input_layer: 3,
-  #     output_layer: %{
-  #       size: 1
-  #     },
-  #     hidden_layers: [
-  #       %{
-  #         size: 2,
-  #         activation: %{
-  #           func: activ1
-  #         }
-  #       }
-  #     ],
-  #     optim_function: %{
-  #       type: "SGD"
-  #     }
-  #   })
-  #
-  #   assert(nn)
-  #
-  #   network = Network.get(nn)
-  #
-  #   assert(network)
-  #   assert(network.input_layer)
-  #   assert(network.hidden_layers)
-  #   assert(length(network.hidden_layers) == 1)
-  #   assert(network.output_layer)
-  #   assert(network.loss_fn)
-  #
-  #   input_layer = Layer.get(network.input_layer)
-  #   output_layer = Layer.get(network.output_layer)
-  #
-  #   sigmoid = Activators.getFunction("Sigmoid")
-  #   mse = LossFunctions.getFunction("MSE")
-  #   sgd = Optimizers.getFunction("SGD")
-  #   assert(sigmoid)
-  #   assert(mse)
-  #   assert(sgd)
-  #
-  #   assert(network.loss_fn == mse)
-  #   assert(network.optim_fn == sgd)
-  #
-  #   assert(input_layer)
-  #   assert(length(input_layer.neurons) == 4)
-  #   assert(input_layer.activation_fn == nil)
-  #   assert(input_layer.optim_fn == sgd)
-  #
-  #   Enum.each(network.hidden_layers, fn lpid ->
-  #     layer = Layer.get(lpid)
-  #     assert(layer)
-  #     assert(length(layer.neurons) == 3)
-  #     assert(layer.activation_fn == sigmoid)
-  #     Enum.each(layer.neurons, fn npid ->
-  #       neuron = Neuron.get(npid)
-  #       assert(neuron)
-  #       assert(neuron.learning_rate == 0.1)
-  #       assert(neuron.optim_fn == sgd)
-  #       if neuron.bias? do
-  #         assert(neuron.activation_fn == nil)
-  #       else
-  #         assert(neuron.activation_fn == activ1)
-  #       end
-  #     end)
-  #   end)
-  #
-  #   assert(output_layer)
-  #   assert(length(output_layer.neurons) == 1)
-  #   assert(output_layer.activation_fn == sigmoid)
-  #   assert(output_layer.optim_fn == sgd)
-  #
-  #   Enum.each(input_layer.neurons, fn pid ->
-  #     neuron = Neuron.get(pid)
-  #     assert(neuron)
-  #     assert(neuron.activation_fn == nil)
-  #     assert(neuron.learning_rate == 0.1)
-  #   end)
-  #
-  #   Enum.each(output_layer.neurons, fn pid ->
-  #     neuron = Neuron.get(pid)
-  #     assert(neuron)
-  #     assert(neuron.activation_fn == sigmoid)
-  #     assert(neuron.learning_rate == 0.1)
-  #   end)
-  # end
+  test "Create network with hidden layer with custom activation function." do
+    activ1 = fn(n) ->
+      if -n > 705 do
+        1 / (1 + :math.exp(705))
+      else
+        1 / (1 + :math.exp(-n))
+      end
+    end
+    activ1_derivative = fn(n) ->
+      activ = activ1.(n)
+      activ * (1 - activ)
+    end
+    nn = Neurx.build(%{
+      input_layer: 3,
+      output_layer: %{
+        size: 1
+      },
+      hidden_layers: [
+        %{
+          size: 2,
+          activation: %{
+            func: [activ1, activ1_derivative]
+          }
+        }
+      ],
+      optim_function: %{
+        type: "SGD"
+      }
+    })
+
+    assert(nn)
+
+    network = Network.get(nn)
+
+    assert(network)
+    assert(network.input_layer)
+    assert(network.hidden_layers)
+    assert(length(network.hidden_layers) == 1)
+    assert(network.output_layer)
+    assert(network.loss_fn)
+
+    input_layer = Layer.get(network.input_layer)
+    output_layer = Layer.get(network.output_layer)
+
+    sigmoid = Activators.getFunction("Sigmoid")
+    mse = LossFunctions.getFunction("MSE")
+    sgd = Optimizers.getFunction("SGD")
+    assert(sigmoid)
+    assert(mse)
+    assert(sgd)
+
+    assert(network.loss_fn == mse)
+    assert(network.optim_fn == sgd)
+
+    assert(input_layer)
+    assert(length(input_layer.neurons) == 4)
+    assert(input_layer.activation_fn == nil)
+    assert(input_layer.optim_fn == sgd)
+
+    Enum.each(network.hidden_layers, fn lpid ->
+      layer = Layer.get(lpid)
+      assert(layer)
+      assert(length(layer.neurons) == 3)
+      assert(layer.activation_fn == activ1)
+      Enum.each(layer.neurons, fn npid ->
+        neuron = Neuron.get(npid)
+        assert(neuron)
+        assert(neuron.learning_rate == 0.1)
+        assert(neuron.optim_fn == sgd)
+        if neuron.bias? do
+          assert(neuron.activation_fn == nil)
+        else
+          assert(neuron.activation_fn == activ1)
+        end
+      end)
+    end)
+
+    assert(output_layer)
+    assert(length(output_layer.neurons) == 1)
+    assert(output_layer.activation_fn == sigmoid)
+    assert(output_layer.optim_fn == sgd)
+
+    Enum.each(input_layer.neurons, fn pid ->
+      neuron = Neuron.get(pid)
+      assert(neuron)
+      assert(neuron.activation_fn == nil)
+      assert(neuron.learning_rate == 0.1)
+    end)
+
+    Enum.each(output_layer.neurons, fn pid ->
+      neuron = Neuron.get(pid)
+      assert(neuron)
+      assert(neuron.activation_fn == sigmoid)
+      assert(neuron.learning_rate == 0.1)
+    end)
+  end
 
   # TODO: prefix and suffix functions don't do anything right now.
   # Once they actually do something we will need to add some asserts
