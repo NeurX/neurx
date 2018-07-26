@@ -60,7 +60,14 @@ defmodule Neurx.Build do
               suffix_functions: [suf1]
             }
           }
-        ]
+        ],
+        loss_function: %{
+          type: "MSE"
+        },
+        optim_function: %{
+          type: "SGD",
+          learning_rate: 0.3
+        }
       })
   """
   def build(config) do
