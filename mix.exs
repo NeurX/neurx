@@ -16,7 +16,7 @@ defmodule Neurx.MixProject do
       start_permanent: Mix.env == :prod,
 
       name: "neurx",
-      docs: [source_ref: "v#{@version}", main: "NeurX"],
+      docs: [source_ref: "v#{@version}", main: "Neurx"],
       source_url: "https://github.com/NeurX/neurx",
       description: "
         NN library for Elixir
