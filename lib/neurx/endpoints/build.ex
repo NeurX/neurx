@@ -17,6 +17,62 @@ defmodule Neurx.Build do
 
   @doc """
   Builds the network.
+
+  How to use Build:
+  ### Example containing possible inputs
+      activation1 = fn(x) -> x * 2 end
+      activation2 = fn(x) -> x * x end
+      pre1 = fn(x) -> x * 4 end
+      pre2 = fn(x) -> x - 5 end
+      suf1 = fn(x) -> x + 1 end
+
+      nn = Neurx.build(%{
+        input_layer: 3,
+        output_layer: %{
+          size: 2,
+          activation: %{
+            type: "Sigmoid"
+          }
+        },
+        hidden_layers: [
+          %{
+            size: 5
+          },
+          %{
+            size: 3,
+            activation: %{
+              type: "Sigmoid"
+            }
+          },
+          %{
+            size: 4,
+            activation: %{
+              func: activation1
+            }
+          }
+          ,
+          %{
+            size: 7,
+            activation: %{
+              func: activation2
+            },
+            prefix_functions: [
+              pre1,
+              pre2
+            ],
+            suffix_functions: [
+              suf1
+            ]
+          }
+        ],
+        loss_function: %{
+          type: "MSE"
+        },
+        optim_function: %{
+          type: "SGD",
+          learning_rate: 0.3
+        }
+      })
   """
   def build(config) do
     if config[:input_layer] <= 0 do
@@ -101,27 +157,20 @@ defmodule Neurx.Build do
   end
 
   defp sanitize_activation_functions(activ) do
-    if activ != nil do
-      if activ[:type] not in @activation_types do
+    cond do
+      activ == nil -> @default_activation
+      activ[:func] -> %{custom: activ[:func]}
+      activ[:type] != nil and activ[:type] not in @activation_types ->
         raise "[Neurx.Build] :: Invalid activation function."
-      else
-         activ[:type]
-      end
-    else
-      @default_activation
+      activ[:type] -> activ[:type]
+      true -> @default_activation
     end
   end
 
   defp sanitize_function_list(funcs) do
-    if funcs != nil do
-      funcs |>
-      Enum.map(fn f ->
-        if f != nil do
-          f
-        end
-      end)
-    else
-      []
+    cond do
+      funcs == nil -> []
+      true -> funcs |> Enum.map(fn(f) -> if f != nil, do: f end)
     end
   end
 end

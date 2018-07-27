@@ -3,11 +3,11 @@ defmodule BuildTest do
   doctest Neurx.Build
 
   alias Neurx.{Network, Layer, Neuron, Activators, LossFunctions, Optimizers}
-  
+
   ###############################################
   # Build Endpoint Tests
   ###############################################
-  
+
   test "Create a default 2:1 network." do
     nn = Neurx.build(%{
       input_layer: 2,
@@ -37,7 +37,7 @@ defmodule BuildTest do
     assert(sigmoid_derv)
     assert(mse)
     assert(sgd)
-    
+
     assert(network.loss_fn == mse)
     assert(network.optim_fn == sgd)
 
@@ -45,7 +45,7 @@ defmodule BuildTest do
     assert(length(input_layer.neurons) == 3)
     assert(input_layer.activation_fn == nil)
     assert(input_layer.optim_fn == sgd)
-    
+
     assert(output_layer)
     assert(length(output_layer.neurons) == 1)
     assert(output_layer.activation_fn == sigmoid)
@@ -59,7 +59,7 @@ defmodule BuildTest do
       assert(neuron.learning_rate == 0.1)
       assert(neuron.optim_fn == sgd)
     end)
-    
+
     Enum.each(output_layer.neurons, fn pid ->
       neuron = Neuron.get(pid)
       assert(neuron)
@@ -102,7 +102,7 @@ defmodule BuildTest do
     assert(sigmoid_derv)
     assert(mse)
     assert(sgd)
-    
+
     assert(network.loss_fn == mse)
     assert(network.optim_fn == sgd)
 
@@ -110,7 +110,7 @@ defmodule BuildTest do
     assert(length(input_layer.neurons) == 4)
     assert(input_layer.activation_fn == nil)
     assert(input_layer.optim_fn == sgd)
-    
+
     assert(output_layer)
     assert(length(output_layer.neurons) == 1)
     assert(output_layer.activation_fn == sigmoid)
@@ -124,7 +124,7 @@ defmodule BuildTest do
       assert(neuron.learning_rate == 0.1)
       assert(neuron.optim_fn == sgd)
     end)
-    
+
     Enum.each(output_layer.neurons, fn pid ->
       neuron = Neuron.get(pid)
       assert(neuron)
@@ -134,7 +134,7 @@ defmodule BuildTest do
       assert(neuron.optim_fn == sgd)
     end)
   end
-  
+
   test "Create basic 3:2:1 network." do
     nn = Neurx.build(%{
       input_layer: 3,
@@ -167,7 +167,7 @@ defmodule BuildTest do
 
     input_layer = Layer.get(network.input_layer)
     output_layer = Layer.get(network.output_layer)
-    
+
     sigmoid = Activators.getFunction("Sigmoid")
     sigmoid_derv = Activators.getDeltaFunction("Sigmoid")
     mse = LossFunctions.getFunction("MSE")
@@ -184,7 +184,7 @@ defmodule BuildTest do
     assert(length(input_layer.neurons) == 4)
     assert(input_layer.activation_fn == nil)
     assert(input_layer.optim_fn == sgd)
-    
+
     Enum.each(input_layer.neurons, fn pid ->
       neuron = Neuron.get(pid)
       assert(neuron)
@@ -211,7 +211,7 @@ defmodule BuildTest do
         end
       end)
     end)
-    
+
     assert(output_layer)
     assert(length(output_layer.neurons) == 1)
     assert(output_layer.activation_fn == sigmoid)
@@ -225,7 +225,7 @@ defmodule BuildTest do
       assert(neuron.learning_rate == 0.1)
     end)
   end
-  
+
   test "Create 100:50:25:2 network." do
     nn = Neurx.build(%{
       input_layer: 100,
@@ -268,7 +268,7 @@ defmodule BuildTest do
 
     input_layer = Layer.get(network.input_layer)
     output_layer = Layer.get(network.output_layer)
-    
+
     relu = Activators.getFunction("Relu")
     relu_derv = Activators.getDeltaFunction("Relu")
     sigmoid = Activators.getFunction("Sigmoid")
@@ -289,7 +289,7 @@ defmodule BuildTest do
     assert(length(input_layer.neurons) == 101)
     assert(input_layer.activation_fn == nil)
     assert(input_layer.optim_fn == sgd)
-    
+
     Enum.each(input_layer.neurons, fn pid ->
       neuron = Neuron.get(pid)
       assert(neuron)
@@ -333,7 +333,7 @@ defmodule BuildTest do
         assert(neuron.activation_fn == relu)
       end
     end)
-    
+
     assert(output_layer)
     assert(length(output_layer.neurons) == 2)
     assert(output_layer.activation_fn == sigmoid)
@@ -345,6 +345,103 @@ defmodule BuildTest do
       assert(neuron.activation_fn == sigmoid)
       assert(neuron.delta_fn == sigmoid_derv)
       assert(neuron.learning_rate == 0.3)
+    end)
+  end
+
+  test "Create network with hidden layer with custom activation function." do
+    activ1 = fn(n) ->
+      if -n > 705 do
+        1 / (1 + :math.exp(705))
+      else
+        1 / (1 + :math.exp(-n))
+      end
+    end
+    activ1_derivative = fn(n) ->
+      activ = activ1.(n)
+      activ * (1 - activ)
+    end
+    nn = Neurx.build(%{
+      input_layer: 3,
+      output_layer: %{
+        size: 1
+      },
+      hidden_layers: [
+        %{
+          size: 2,
+          activation: %{
+            func: [activ1, activ1_derivative]
+          }
+        }
+      ],
+      optim_function: %{
+        type: "SGD"
+      }
+    })
+
+    assert(nn)
+
+    network = Network.get(nn)
+
+    assert(network)
+    assert(network.input_layer)
+    assert(network.hidden_layers)
+    assert(length(network.hidden_layers) == 1)
+    assert(network.output_layer)
+    assert(network.loss_fn)
+
+    input_layer = Layer.get(network.input_layer)
+    output_layer = Layer.get(network.output_layer)
+
+    sigmoid = Activators.getFunction("Sigmoid")
+    mse = LossFunctions.getFunction("MSE")
+    sgd = Optimizers.getFunction("SGD")
+    assert(sigmoid)
+    assert(mse)
+    assert(sgd)
+
+    assert(network.loss_fn == mse)
+    assert(network.optim_fn == sgd)
+
+    assert(input_layer)
+    assert(length(input_layer.neurons) == 4)
+    assert(input_layer.activation_fn == nil)
+    assert(input_layer.optim_fn == sgd)
+
+    Enum.each(network.hidden_layers, fn lpid ->
+      layer = Layer.get(lpid)
+      assert(layer)
+      assert(length(layer.neurons) == 3)
+      assert(layer.activation_fn == activ1)
+      Enum.each(layer.neurons, fn npid ->
+        neuron = Neuron.get(npid)
+        assert(neuron)
+        assert(neuron.learning_rate == 0.1)
+        assert(neuron.optim_fn == sgd)
+        if neuron.bias? do
+          assert(neuron.activation_fn == nil)
+        else
+          assert(neuron.activation_fn == activ1)
+        end
+      end)
+    end)
+
+    assert(output_layer)
+    assert(length(output_layer.neurons) == 1)
+    assert(output_layer.activation_fn == sigmoid)
+    assert(output_layer.optim_fn == sgd)
+
+    Enum.each(input_layer.neurons, fn pid ->
+      neuron = Neuron.get(pid)
+      assert(neuron)
+      assert(neuron.activation_fn == nil)
+      assert(neuron.learning_rate == 0.1)
+    end)
+
+    Enum.each(output_layer.neurons, fn pid ->
+      neuron = Neuron.get(pid)
+      assert(neuron)
+      assert(neuron.activation_fn == sigmoid)
+      assert(neuron.learning_rate == 0.1)
     end)
   end
 
@@ -388,7 +485,7 @@ defmodule BuildTest do
 
     input_layer = Layer.get(network.input_layer)
     output_layer = Layer.get(network.output_layer)
-    
+
     sigmoid = Activators.getFunction("Sigmoid")
     mse = LossFunctions.getFunction("MSE")
     sgd = Optimizers.getFunction("SGD")
@@ -421,7 +518,7 @@ defmodule BuildTest do
         end
       end)
     end)
-    
+
     assert(output_layer)
     assert(length(output_layer.neurons) == 1)
     assert(output_layer.activation_fn == sigmoid)
@@ -433,7 +530,7 @@ defmodule BuildTest do
       assert(neuron.activation_fn == nil)
       assert(neuron.learning_rate == 0.1)
     end)
-    
+
     Enum.each(output_layer.neurons, fn pid ->
       neuron = Neuron.get(pid)
       assert(neuron)
@@ -476,7 +573,7 @@ defmodule BuildTest do
     rescue
       RuntimeError -> nil
     end
-    
+
     try do
       Neurx.build(%{
         input_layer: "hello",
@@ -502,7 +599,7 @@ defmodule BuildTest do
     rescue
       RuntimeError -> nil
     end
-    
+
     try do
       Neurx.build(%{
         input_layer: 2,
@@ -533,7 +630,7 @@ defmodule BuildTest do
     rescue
       RuntimeError -> nil
     end
-    
+
     try do
       Neurx.build(%{
         input_layer: 3,
@@ -551,7 +648,7 @@ defmodule BuildTest do
       ArgumentError -> nil
     end
   end
-  
+
   test "Unknown Activation function on output layer." do
     try do
       Neurx.build(%{
@@ -568,7 +665,7 @@ defmodule BuildTest do
       RuntimeError -> nil
     end
   end
-  
+
   test "Unknown Activation function on hidden layer." do
     try do
       Neurx.build(%{
@@ -590,7 +687,7 @@ defmodule BuildTest do
       RuntimeError -> nil
     end
   end
-  
+
   test "Unknown loss function." do
     try do
       Neurx.build(%{
@@ -607,7 +704,7 @@ defmodule BuildTest do
       RuntimeError -> nil
     end
   end
-  
+
   test "Null loss function type." do
     try do
       Neurx.build(%{
@@ -622,7 +719,7 @@ defmodule BuildTest do
       RuntimeError -> nil
     end
   end
-  
+
   test "Unknown optimization function." do
     try do
       Neurx.build(%{
@@ -640,7 +737,7 @@ defmodule BuildTest do
       RuntimeError -> nil
     end
   end
-  
+
   test "Null optimization function type." do
     try do
       Neurx.build(%{
@@ -657,7 +754,7 @@ defmodule BuildTest do
       RuntimeError -> nil
     end
   end
-  
+
   test "Invalid learning rate." do
 
     # Zero learning rate.
