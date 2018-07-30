@@ -1,6 +1,7 @@
 [![License: LGPL v3](https://img.shields.io/badge/License-LGPL%20v3-blue.svg)](https://www.gnu.org/licenses/lgpl-3.0)
-[![Build Status](https://travis-ci.org/NeurX/neurx.svg?branch=master)](https://travis-ci.org/NeurX/neurx)
-[![Coverage Status](https://coveralls.io/repos/github/NeurX/neurx/badge.svg?branch=master)](https://coveralls.io/github/NeurX/neurx?branch=master)
+[![Hex.pm](http://img.shields.io/hexpm/v/neurx.svg?style=flat)](https://hex.pm/packages/neurx)
+[![Travis](https://travis-ci.org/NeurX/neurx.svg?branch=master)](https://travis-ci.org/NeurX/neurx)
+[![Coveralls](https://coveralls.io/repos/github/NeurX/neurx/badge.svg?branch=master)](https://coveralls.io/github/NeurX/neurx?branch=master)
 
 # Neurx
 

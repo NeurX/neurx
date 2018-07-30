@@ -1,4 +1,6 @@
 defmodule Neurx.Neuron do
+  use GenServer
+
   @moduledoc """
   A neuron makes up a network. It's purpose is to sum its inputs
   and compute an output. During training the neurons adjust weights
@@ -13,8 +15,8 @@ defmodule Neurx.Neuron do
   Create a neuron agent
   """
   def start_link(neuron_fields \\ %{}) do
-    {:ok, pid} = Agent.start_link(fn -> %Neuron{} end)
-    
+    {:ok, pid} = GenServer.start_link(__MODULE__, %Neuron{})
+
     pid |> update(%{pid: pid})
     pid |> update(neuron_fields)
 
@@ -22,16 +24,16 @@ defmodule Neurx.Neuron do
   end
 
   @doc """
-  ## Pass in the pid, and a map to update values of a neuron
+  Pass in the pid, and a map to update values of a neuron
   """
   def update(pid, neuron_fields) do
-    Agent.update(pid, &Map.merge(&1, neuron_fields))
+    GenServer.cast(pid,{:update, neuron_fields})
   end
 
   @doc """
   Lookup and return a neuron
   """
-  def get(pid), do: Agent.get(pid, & &1)
+  def get(pid), do: GenServer.call(pid,{:get})
 
   @doc """
   Connect two neurons
@@ -70,7 +72,7 @@ defmodule Neurx.Neuron do
       else
         input = value || Enum.reduce(neuron.incoming, 0, sumf())
         if input_neuron?(neuron) do
-          %{input: input, output: input} 
+          %{input: input, output: input}
         else
           %{input: input, output: neuron.activation_fn.(input)}
         end
@@ -89,7 +91,7 @@ defmodule Neurx.Neuron do
 
     if !neuron.bias? && !input_neuron?(neuron) do
       if output_neuron?(neuron) do
-        error = (neuron.output - target_output) 
+        error = (neuron.output - target_output)
         neuron_pid |> update(%{delta: error * neuron.delta_fn.(neuron.output)})
       else
         neuron |> calculate_outgoing_delta
@@ -115,5 +117,27 @@ defmodule Neurx.Neuron do
       end)
 
     neuron.pid |> update(%{delta: delta})
+  end
+
+  @doc """
+  Server Callback for GenServer - init
+  """
+  def init(neuron) do
+    {:ok, neuron}
+  end
+
+  @doc """
+  Server Callback for GenServer - call
+  """
+  def handle_call({:get}, _from, neuron) do
+    {:reply, neuron, neuron}
+  end
+
+  @doc """
+  Server Callback for GenServer - cast
+  """
+  def handle_cast({:update, fields}, neuron) do
+    updated_neuron = Map.merge(neuron, fields)
+    {:noreply, updated_neuron}
   end
 end
