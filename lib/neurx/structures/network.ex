@@ -93,11 +93,7 @@ defmodule Neurx.Network do
   end
 
   defp flatten_layers(network) do
-    if network.hidden_layers != nil do
-      [network.input_layer] ++ network.hidden_layers ++ [network.output_layer]
-    else
-      [network.input_layer] ++ [network.output_layer]
-    end
+    [network.input_layer] ++ network.hidden_layers ++ [network.output_layer]
   end
 
   @doc """
