@@ -52,5 +52,6 @@ defmodule Neurx.OptimizersTest do
     task2 = Task.async(fn -> Optimizers.stochastic_gradient_descent(input_neuron) end)
     Task.await(task2)
 
+    assert(connection.weight > 0 and connection.weight <= 1)
   end
 end
