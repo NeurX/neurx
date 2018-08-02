@@ -5,60 +5,76 @@ defmodule Neurx.Train do
 
   alias Neurx.{Network}
 
-  @default_epoch 0
-  @default_log_freq 0
+  @default_error 0.01
+  @default_log_freq 100
 
   @doc """
   Trains the network.
   """
   def train(network_pid, training_data, options) do
-    {epochs, log_freq} =
+    filtered_options =
       case options do
         nil ->
-          {@default_epoch, @default_log_freq}
+          %{epochs: nil, error_threshold: @default_error, log_freq: @default_log_freq}
         %{} ->
-          epochs = 
-            case options.epochs do
-              nil ->
-                @default_epoch
-              x when x <= 0 ->
-                @default_epoch
-              _ ->
-                options.epochs
-            end
-          log_freq = 
-            case options.log_freq do
-              nil ->
-                @default_log_freq
-              x when x <= 0 ->
-                @default_log_freq
-              _ ->
-                options.log_freq
-            end
-          {epochs, log_freq}
+          epochs =
+            Map.get(options, :epochs, -1)
+            |> (fn(x) -> if x <= 0, do: nil, else: x end).()
+
+          error_threshold =
+            Map.get(options, :error_threshold, -1)
+            |> (fn(x) -> if x <= 0, do: nil, else: x end).()
+
+          log_freq =
+            Map.get(options, :log_freq, @default_log_freq)
+            |>(fn(x) -> if x < 0, do: @default_log_freq, else: x end).()
+          %{epochs: epochs, error_threshold: error_threshold, log_freq: log_freq}
         _ ->
-          {@default_epoch, @default_log_freq}
+          %{epochs: nil, error_threshold: @default_error, log_freq: @default_log_freq}
       end
 
-    num_training_samples = length(training_data)
-    IO.puts "\n"
+    if (filtered_options.log_freq > 0), do: IO.puts("\n")
 
-    for epoch <- 0..epochs do
-      average_error =
-        Enum.reduce(training_data, 0, fn sample, sum ->
+    do_training(network_pid, training_data, filtered_options, length(training_data), 0)
+  end
+
+  defp do_training(network_pid, training_data, options, num_training_samples, epoch) do
+    # IO.inspect(options)
+    # IO.inspect(options.error_threshold)
+
+    average_error =
+      Enum.reduce(training_data, 0,
+        fn sample, sum ->
           network_pid |> Network.get() |> Network.activate(sample.input)
           network_pid |> Network.get() |> Network.train(sample.output)
-
           sum + Network.get(network_pid).error / num_training_samples
-        end)
+      end)
 
-      if log_freq != 0 && (rem(epoch, log_freq) == 0 || epoch + 1 == epochs) do
-        IO.puts("Epoch: #{epoch}    Error: #{unexponential(average_error)}")
-      end
+    if options.log_freq != 0 && (rem(epoch, options.log_freq) == 0 || epoch + 1 == options.epochs) do
+      IO.puts("Epoch: #{epoch}    Error: #{unexponential(average_error)}")
     end
 
-    {:ok, network_pid, Network.get(network_pid).error}
+    if (options.log_freq > 0) do
+
+    end
+    cond do
+      (options.error_threshold != nil) and (average_error <= options.error_threshold) ->
+        if (options.log_freq > 0) do
+          IO.inspect("END on ERROR")
+          IO.puts("Epoch: #{epoch}    Error: #{unexponential(average_error)}")
+        end
+        {:ok, network_pid, Network.get(network_pid).error}
+      (options.epochs != nil) and (epoch >= options.epochs) ->
+        if (options.log_freq > 0) do
+          IO.inspect("END on EPOCHS")
+          IO.puts("Epoch: #{epoch}    Error: #{unexponential(average_error)}")
+        end
+        {:ok, network_pid, Network.get(network_pid).error}
+      true ->
+        do_training(network_pid, training_data, options, num_training_samples, epoch+1)
+    end
   end
+
 
   defp unexponential(average_error) do
     :erlang.float_to_binary(average_error, [{:decimals, 19}, :compact])
