@@ -9,7 +9,7 @@ defmodule Neurx.Connection do
 
   alias Neurx.{Connection}
 
-  defstruct pid: nil, source_pid: nil, target_pid: nil, weight: 0.4
+  defstruct pid: nil, source_pid: nil, target_pid: nil, weight: (1 - :random.uniform())
 
   @doc """
   Creates a connection.
