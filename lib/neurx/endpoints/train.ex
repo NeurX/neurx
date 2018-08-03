@@ -35,10 +35,10 @@ defmodule Neurx.Train do
 
     if (filtered_options.log_freq > 0), do: IO.puts("\n")
 
-    do_training(network_pid, training_data, filtered_options, length(training_data), 0)
+    do_training(network_pid, training_data, filtered_options, length(training_data), 0, 1)
   end
 
-  defp do_training(network_pid, training_data, options, num_training_samples, epoch) do
+  defp do_training(network_pid, training_data, options, num_training_samples, epoch, last_error) do
     # IO.inspect(options)
     # IO.inspect(options.error_threshold)
 
@@ -51,7 +51,7 @@ defmodule Neurx.Train do
       end)
 
     if options.log_freq != 0 && (rem(epoch, options.log_freq) == 0 || epoch + 1 == options.epochs) do
-      IO.puts("Epoch: #{epoch}    Error: #{unexponential(average_error)}")
+      IO.puts("Epoch: #{epoch} \t\tError: #{unexponential(average_error)} \t\tDelta: #{unexponential(last_error-average_error)}")
     end
 
     if (options.log_freq > 0) do
@@ -71,7 +71,7 @@ defmodule Neurx.Train do
         end
         {:ok, network_pid, Network.get(network_pid).error}
       true ->
-        do_training(network_pid, training_data, options, num_training_samples, epoch+1)
+        do_training(network_pid, training_data, options, num_training_samples, epoch+1, average_error)
     end
   end
 
