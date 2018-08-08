@@ -9,7 +9,7 @@ defmodule Neurx.ConnectionTest do
     connection = Connection.get(pid)
     assert(connection.source_pid == nil)
     assert(connection.target_pid == nil)
-    assert(connection.weight == 0.4)
+    assert(connection.weight > 0 and connection.weight <= 1)
   end
 
   test "create new connection with custom values" do
@@ -18,9 +18,9 @@ defmodule Neurx.ConnectionTest do
     {:ok, connection_pid} = Connection.start_link(%{source_pid: pidA, target_pid: pidB})
     connection = Connection.get(connection_pid)
 
-    assert connection.source_pid == pidA
-    assert connection.target_pid == pidB
-    assert connection.weight == 0.4
+    assert(connection.source_pid == pidA)
+    assert(connection.target_pid == pidB)
+    assert(connection.weight > 0 and connection.weight <= 1)
   end
 
   test "update connection values" do
