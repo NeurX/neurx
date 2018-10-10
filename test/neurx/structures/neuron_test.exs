@@ -116,47 +116,10 @@ defmodule Neurx.NeuronTest do
     assert(Neuron.get(pid).output == 0)
   end
 
-  test "activate with incoming connections" do
-    sigmoid_fn = Activators.getFunction("Sigmoid")
-    assert(sigmoid_fn)
-
-    {:ok, pidX} = Neuron.start_link(%{output: 2, activation_fn: sigmoid_fn})
-    {:ok, pidY} = Neuron.start_link(%{output: 5, activation_fn: sigmoid_fn})
-
-    {:ok, connection_one_pid} = Connection.start_link(%{source_pid: pidX})
-    {:ok, connection_two_pid} = Connection.start_link(%{source_pid: pidY})
-
-    {:ok, pidA} = Neuron.start_link(%{incoming: [connection_one_pid, connection_two_pid],
-      activation_fn: sigmoid_fn})
-
-    pidA |> Neuron.activate()
-    assert(Neuron.get(pidA).output == 0.9426758241011313)
-  end
-
   test "activate a bias neuron" do
     {:ok, pid} = Neuron.start_link(%{bias?: true})
     pid |> Neuron.activate()
     assert(Neuron.get(pid).output == 1)
-  end
-
-  test "connect and activate two neurons" do
-    sigmoid_fn = Activators.getFunction("Sigmoid")
-    assert(sigmoid_fn)
-
-    {:ok, pidA} = Neuron.start_link(%{activation_fn: sigmoid_fn})
-    {:ok, pidB} = Neuron.start_link(%{activation_fn: sigmoid_fn})
-    Neuron.connect(pidA, pidB)
-
-    pidA |> Neuron.activate(2)
-    pidB |> Neuron.activate()
-
-    neuronA = Neuron.get(pidA)
-    neuronB = Neuron.get(pidB)
-
-    assert(neuronA.input == 2)
-    assert(neuronA.output == 2)
-    assert(neuronB.input == 0.8)
-    assert(neuronB.output == 0.6899744811276125)
   end
 
   test "train: delta should get smaller (learnin yo!)" do
